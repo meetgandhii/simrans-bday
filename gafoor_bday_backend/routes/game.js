@@ -30,23 +30,9 @@ const CLUES = [
     points: { base: 100, bonus: 50 }
   },
   {
-    id: 3,
-    title: "Victory Lap Trivia",
-    description: "Answer questions about F1 legends",
-    component: "TriviaQuestion",
-    questions: [
-      { question: "Which F1 driver is known as 'The Iceman'?", options: ["Lewis Hamilton", "Kimi Raikkonen", "Sebastian Vettel", "Fernando Alonso"], correct: 1 },
-      { question: "What is Carlos Sainz's racing number?", options: ["55", "16", "23", "33"], correct: 0 }
-    ],
-    answers: ["nike", "nike store"],
-    location: { lat: 42.3502, lng: -71.0759, name: "Nike Store" },
-    bonusTask: "Take a victory pose photo",
-    points: { base: 100, bonus: 50 }
-  },
-  {
     id: 4,
-    title: "Sweet Victory Jigsaw",
-    description: "Complete the F1 puzzle to reveal your next stop",
+    title: "🍦 Sweet Victory",
+    description: "Enjoy your salted caramel ice cream at JP Licks! While you eat, solve these puzzles to find your next destination.",
     component: "JigsawPuzzle",
     imageUrl: "/images/smooth-operator.jpg",
     answers: ["jp licks", "j.p. licks"],
@@ -56,28 +42,36 @@ const CLUES = [
   },
   {
     id: 5,
-    title: "Ducklings Word Search",
-    description: "Find words related to Boston's famous story",
-    component: "WordSearch",
-    words: ["DUCKLINGS", "BOSTON", "GARDEN", "SWAN", "BOAT"],
-    answers: ["public garden", "boston public garden"],
-    location: { lat: 42.3541, lng: -71.0655, name: "Boston Public Garden" },
-    bonusTask: "Find the duckling statues",
+    title: "👟 Racing Shoes",
+    description: "Head to NIKE on Newbury! Check the Air Max section, box 55 (like Carlos's number)!",
+    component: null,
+    answers: ["nike", "nike store"],
+    location: { lat: 42.3502, lng: -71.0759, name: "Nike Store" },
+    bonusTask: "Take a victory podium pose with your new miniature 'shoes'!",
     points: { base: 100, bonus: 50 }
   },
   {
     id: 6,
-    title: "Cute Cat Jigsaw",
-    description: "Complete the adorable cat puzzle to find your next destination",
-    component: "JigsawPuzzle",
-    imageUrl: "/images/cat-puzzle.svg",
-    answers: ["arnold arboretum", "arboretum"],
-    location: { lat: 42.3014, lng: -71.1249, name: "Arnold Arboretum" },
-    bonusTask: "Draw a tree and share it",
+    title: "🦆 Duck Podium",
+    description: "Great job finding the Public Garden! Recreate Carlos's podium celebration with the famous Make Way for Ducklings statues!",
+    component: null,
+    answers: ["public garden", "boston public garden"],
+    location: { lat: 42.3541, lng: -71.0655, name: "Boston Public Garden" },
+    bonusTask: "Record a 10-second victory dance with the ducks!",
     points: { base: 100, bonus: 50 }
   },
   {
     id: 7,
+    title: "🎨 Artistic Finish Line",
+    description: "Welcome to Arnold Arboretum! Where trees race to the sky, create your masterpiece!",
+    component: null,
+    answers: ["arnold arboretum", "arboretum"],
+    location: { lat: 42.3014, lng: -71.1249, name: "Arnold Arboretum" },
+    bonusTask: "Make a birthday wish and paint your favorite moment!",
+    points: { base: 100, bonus: 50 }
+  },
+  {
+    id: 8,
     title: "Championship Finale",
     description: "The final challenge - complete the word search",
     component: "WordSearch",

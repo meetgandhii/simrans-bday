@@ -143,6 +143,39 @@ const ClueCard = ({
         </div>
       )}
 
+      {/* Task Done Button for clues without game components */}
+      {!clue.component && !isCompleted && (
+        <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 className="font-bold mb-2 text-blue-800 flex items-center space-x-1">
+            <Trophy className="w-4 h-4" />
+            <span>Main Task ({formatPoints(clue.points?.base || 100)} pts)</span>
+          </h3>
+          <p className="mb-3 text-blue-700">
+            Complete the task and enter your answer below.
+          </p>
+          
+          <div className="flex flex-col space-y-3">
+            <div className="flex space-x-2">
+              <input
+                type="text"
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                placeholder="Enter your answer..."
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+              />
+              <button
+                onClick={handleSubmit}
+                disabled={loading || !answer.trim()}
+                className="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Submitting...' : 'Task Done'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {clue.bonusTask && (
         <div className={`border-2 border-dashed p-4 rounded-lg mb-4 ${
           isTaskCompleted 
@@ -164,7 +197,7 @@ const ClueCard = ({
               disabled={loading}
               className="bg-yellow-400 text-gray-800 px-4 py-2 rounded hover:bg-yellow-500 transition duration-200 disabled:opacity-50"
             >
-              {loading ? 'Completing...' : 'Task Complete'}
+              {loading ? 'Completing...' : (clue.bonusTask.toLowerCase().includes('photo') || clue.bonusTask.toLowerCase().includes('pose') || clue.bonusTask.toLowerCase().includes('dance') ? 'Click Photo' : 'Task Complete')}
             </button>
           )}
           {isTaskCompleted && (

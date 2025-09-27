@@ -64,6 +64,16 @@ const Header = ({ onNavigate }) => {
               </span>
             </div>
 
+            {/* Logout Button - Desktop */}
+            <button
+              onClick={handleLogout}
+              className="hidden sm:flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              title="Logout"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="text-sm">Logout</span>
+            </button>
+
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}

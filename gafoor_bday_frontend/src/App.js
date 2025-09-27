@@ -9,7 +9,7 @@ import Header from './components/Layout/Header';
 import FloatingButtons from './components/Layout/FloatingButtons';
 import CameraInterface from './components/Camera/CameraInterface';
 import MapInterface from './components/Maps/MapInterface';
-import { CLUES } from './utils/constants';
+// CLUES are now fetched from backend API
 import './index.css';
 
 const AppContent = () => {
@@ -45,9 +45,8 @@ const AppContent = () => {
   };
 
   const handleCameraOpen = () => {
-    // Find current clue based on user progress
-    const clue = CLUES.find(c => c.id === user.gameProgress.currentClue);
-    setCurrentClue(clue);
+    // Set current clue based on user progress
+    setCurrentClue(user.gameProgress.currentClue);
     setShowCamera(true);
   };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { gameAPI } from '../services/api';
-import { CLUES } from '../utils/constants';
+// CLUES are now fetched from backend API
 import ScoreDisplay from './Layout/ScoreDisplay';
 import ClueCard from './ClueCard';
 import WordSearch from './WordSearch';

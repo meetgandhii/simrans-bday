@@ -143,13 +143,13 @@ const CLUES = [
         question: "shayari abc",
         points: 100
       },
-      {
-        id: 2,
-        title: "Placeholder Game",
-        component: "Placeholder",
-        description: "Coming soon...",
-        points: 100
-      }
+      // {
+      //   id: 2,
+      //   title: "Placeholder Game",
+      //   component: "Placeholder",
+      //   description: "Coming soon...",
+      //   points: 100
+      // }
     ],
     finalAnswer: "arboretum",
     location: { lat: 42.3014, lng: -71.1249, name: "Arnold Arboretum" },
@@ -214,7 +214,8 @@ router.get('/progress', auth, async (req, res) => {
       completedGames: completedGamesObj,
       currentGameIndex: user.gameProgress.currentGameIndex || 0,
       totalScore: user.totalScore,
-      availablePoints: user.availablePoints
+      availablePoints: user.availablePoints,
+      clues: CLUES // Include the clues data
     });
   } catch (error) {
     console.error('Get progress error:', error);

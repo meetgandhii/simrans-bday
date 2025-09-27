@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { gameAPI } from '../services/api';
-import { CLUES, LOCATION_ARRAY } from '../utils/constants';
+import { LOCATION_ARRAY } from '../utils/constants';
 import ScoreDisplay from './Layout/ScoreDisplay';
 
 // Import all game components
@@ -28,6 +28,7 @@ const NewGameBoard = () => {
   const [finalAnswer, setFinalAnswer] = useState('');
   const [currentGameIndex, setCurrentGameIndex] = useState(0);
   const [showNextStep, setShowNextStep] = useState(false);
+  const [clues, setClues] = useState([]);
 
   const loadGameProgress = async () => {
     try {
@@ -38,6 +39,7 @@ const NewGameBoard = () => {
         setCompletedGames(progress.completedGames || {});
         setStepCompleted(progress.completedTasks || []);
         setCurrentGameIndex(progress.currentGameIndex || 0);
+        setClues(progress.clues || []);
       }
     } catch (error) {
       console.error('Error loading progress:', error);
@@ -60,7 +62,7 @@ const NewGameBoard = () => {
 
   // Find the next incomplete game when step or completed games change
   useEffect(() => {
-    const step = CLUES.find(c => c.id === currentStep);
+    const step = clues.find(c => c.id === currentStep);
     if (step && step.games) {
       // Find the first incomplete game
       const nextGameIndex = step.games.findIndex(game => {
@@ -81,7 +83,7 @@ const NewGameBoard = () => {
 
   const handleGameComplete = async (stepId, gameId) => {
     try {
-      const step = CLUES.find(c => c.id === stepId);
+      const step = clues.find(c => c.id === stepId);
       const game = step?.games?.find(g => g.id === gameId);
       
       // Save to backend first
@@ -116,7 +118,7 @@ const NewGameBoard = () => {
 
   const handleFinalAnswerSubmit = async (stepId, answer) => {
     try {
-      const step = CLUES.find(c => c.id === stepId);
+      const step = clues.find(c => c.id === stepId);
       if (step && answer.toLowerCase().includes(step.finalAnswer.toLowerCase())) {
         // Correct answer - complete the step
         await gameAPI.completeClue(stepId, answer);
@@ -219,7 +221,7 @@ const NewGameBoard = () => {
           <ScoreDisplay />
 
           {/* Render Steps */}
-          {CLUES.map(step => {
+          {clues.map(step => {
             const isActive = currentStep === step.id;
             const isCompleted = stepCompleted[step.id];
             

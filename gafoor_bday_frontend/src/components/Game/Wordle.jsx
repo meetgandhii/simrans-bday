@@ -121,7 +121,6 @@ const Wordle = ({ answer, onComplete, isCompleted = false }) => {
         <input
           type="text"
           value={currentGuess}
-          onChange={(e) => setCurrentGuess(e.target.value.toUpperCase().slice(0, WORD_LENGTH))}
           onKeyDown={handleKeyPress}
           placeholder="Enter your guess..."
           className="p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 text-center font-mono text-lg uppercase tracking-wider"

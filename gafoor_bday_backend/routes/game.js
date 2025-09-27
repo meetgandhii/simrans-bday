@@ -128,7 +128,10 @@ router.post('/complete-clue', auth, async (req, res) => {
     // Add points and update progress
     user.addPoints(clue.points.base);
     user.gameProgress.completedClues.push(clueId);
-    user.gameProgress.currentClue = Math.min(clueId + 1, CLUES.length);
+    
+    // Find the next available clue
+    const nextClue = CLUES.find(c => c.id > clueId);
+    user.gameProgress.currentClue = nextClue ? nextClue.id : null; // null if no more clues
     user.gameProgress.lastUpdated = new Date();
 
     await user.save();
@@ -242,8 +245,9 @@ router.post('/admin/skip-clue', auth, adminAuth, async (req, res) => {
       user.gameProgress.completedClues.push(clueId);
     }
     
-    // Update current clue
-    user.gameProgress.currentClue = Math.min(clueId + 1, CLUES.length);
+    // Find the next available clue
+    const nextClue = CLUES.find(c => c.id > clueId);
+    user.gameProgress.currentClue = nextClue ? nextClue.id : null; // null if no more clues
     user.gameProgress.lastUpdated = new Date();
 
     await user.save();

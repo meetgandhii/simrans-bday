@@ -117,6 +117,13 @@ const CLUES = [
         component: "Connections",
         categories: ["TJ Maxx Items", "Categories", "Placeholder", "Placeholder"],
         points: 100
+      },
+      {
+        id: 3,
+        title: "Shayari Challenge",
+        component: "TextInput",
+        question: "Not MIN but the MAX of birthday cheer for our sister,\nClearance and treasures that sparkle and glitter,\nVerstappen should be sued for stealing this name,\nTwo letters and double X win the bargain game.\nTwo letters and double X win the bargain game.",
+        points: 100
       }
     ],
     finalAnswer: "tj maxx",
@@ -265,7 +272,7 @@ router.post('/complete-clue', auth, async (req, res) => {
   try {
     const { clueId, answer } = req.body;
     const user = await User.findById(req.user._id);
-    
+
     const clue = CLUES.find(c => c.id === clueId);
     if (!clue) {
       return res.status(400).json({ message: 'Invalid clue ID' });
@@ -277,7 +284,7 @@ router.post('/complete-clue', auth, async (req, res) => {
     }
 
     // Validate answer
-    const isCorrect = clue.finalAnswer && 
+    const isCorrect = clue.finalAnswer &&
       answer.toLowerCase().includes(clue.finalAnswer.toLowerCase());
 
     if (!isCorrect) {
@@ -287,7 +294,7 @@ router.post('/complete-clue', auth, async (req, res) => {
     // Add points and update progress
     user.addPoints(clue.points.bonus || 50);
     user.gameProgress.completedClues.push(clueId);
-    
+
     // Find the next available clue
     const nextClue = CLUES.find(c => c.id > clueId);
     user.gameProgress.currentClue = nextClue ? nextClue.id : null; // null if no more clues
@@ -313,7 +320,7 @@ router.post('/complete-task', auth, async (req, res) => {
   try {
     const { clueId } = req.body;
     const user = await User.findById(req.user._id);
-    
+
     const clue = CLUES.find(c => c.id === clueId);
     if (!clue) {
       return res.status(400).json({ message: 'Invalid clue ID' });
@@ -353,10 +360,10 @@ router.get('/locations', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     const currentClue = user.gameProgress.currentClue;
-    
+
     // Get all locations
     const locations = await GameLocation.find().sort({ clueNumber: 1 });
-    
+
     // Filter based on user progress
     const accessibleLocations = locations.map(location => ({
       ...location.toObject(),
@@ -377,7 +384,7 @@ router.get('/clue/:clueId', auth, async (req, res) => {
   try {
     const { clueId } = req.params;
     const clue = CLUES.find(c => c.id === parseInt(clueId));
-    
+
     if (!clue) {
       return res.status(404).json({ message: 'Clue not found' });
     }
@@ -394,7 +401,7 @@ router.post('/admin/skip-clue', auth, adminAuth, async (req, res) => {
   try {
     const { userId, clueId } = req.body;
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -403,7 +410,7 @@ router.post('/admin/skip-clue', auth, adminAuth, async (req, res) => {
     if (!user.gameProgress.completedClues.includes(clueId)) {
       user.gameProgress.completedClues.push(clueId);
     }
-    
+
     // Find the next available clue
     const nextClue = CLUES.find(c => c.id > clueId);
     user.gameProgress.currentClue = nextClue ? nextClue.id : null; // null if no more clues

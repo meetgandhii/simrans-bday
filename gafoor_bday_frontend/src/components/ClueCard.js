@@ -55,7 +55,7 @@ const ClueCard = ({
       const result = await onAnswerSubmit(clue.id, answer.toLowerCase().trim());
       if (result.success) {
         setAnswer('');
-        onClueComplete && onClueComplete();
+        // No need to call onClueComplete here - user state is already updated in handleAnswerSubmit
       } else {
         setError(result.message);
       }
@@ -88,6 +88,7 @@ const ClueCard = ({
     setLoading(true);
     try {
       await gameAPI.skipClue(user.id, clue.id);
+      // Refresh game progress after admin skip
       onClueComplete && onClueComplete();
     } catch (error) {
       setError('Failed to skip clue');

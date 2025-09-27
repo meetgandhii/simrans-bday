@@ -47,6 +47,7 @@ export const authAPI = {
 // Game API
 export const gameAPI = {
   getProgress: () => api.get('/game/progress'),
+  completeGame: (stepId, gameId, points) => api.post('/game/complete-game', { stepId, gameId, points }),
   completeClue: (clueId, answer) => api.post('/game/complete-clue', { clueId, answer }),
   completeTask: (clueId) => api.post('/game/complete-task', { clueId }),
   getLocations: () => api.get('/game/locations'),

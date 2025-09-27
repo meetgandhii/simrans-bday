@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
-import GameBoard from './components/GameBoard';
+import NewGameBoard from './components/NewGameBoard';
 import ShopPage from './components/Shop/ShopPage';
 import AdminPanel from './components/Admin/AdminPanel';
 import Header from './components/Layout/Header';
@@ -58,13 +58,13 @@ const AppContent = () => {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'game':
-        return <GameBoard />;
+        return <NewGameBoard />;
       case 'shop':
         return <ShopPage />;
       case 'admin':
         return <AdminPanel />;
       default:
-        return <GameBoard />;
+        return <NewGameBoard />;
     }
   };
 

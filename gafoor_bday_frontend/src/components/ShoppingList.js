@@ -1,17 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
-const ShoppingList = ({ onComplete, isCompleted = false }) => {
+const ShoppingList = ({ items, onComplete, isCompleted = false }) => {
   const [checkedItems, setCheckedItems] = useState(new Set());
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
-  
-  const items = [
-    'Dried mangoes',
-    'Unsweetened coconut chips', 
-    'Nuts (any kind)',
-    'Kale chips (or your jerk/chili lime chips!)',
-    'Italian sparkling water',
-    'Naan crackers'
-  ];
 
   const handleCheck = (index) => {
     if (isCompleted) return;
@@ -37,7 +28,7 @@ const ShoppingList = ({ onComplete, isCompleted = false }) => {
       setHasCalledCompletion(true);
       setTimeout(() => {
         onComplete();
-        alert('D-U-N-K-I-N! All items collected! The first letters spell your next destination.');
+        alert(`${getFirstLetters()}! All items collected! The first letters spell your next destination.`);
       }, 300);
     }
   }, [checkedItems.size, items.length, onComplete, hasCalledCompletion, isCompleted]);
@@ -102,7 +93,7 @@ const ShoppingList = ({ onComplete, isCompleted = false }) => {
         {(checkedItems.size === items.length || isCompleted) && (
           <div className="mt-3 p-2 bg-green-100 border border-green-400 rounded-lg">
             <p className="text-green-800 font-medium text-sm">
-              {isCompleted ? '✅ Clue completed!' : '🎉 D-U-N-K-I-N! All items collected!'}
+              {isCompleted ? '✅ Clue completed!' : '🎉 N-I-K-E! All items collected!'}
             </p>
           </div>
         )}

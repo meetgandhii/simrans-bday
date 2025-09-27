@@ -48,6 +48,15 @@ const userSchema = new mongoose.Schema({
         completedTasks: [{
             type: Number
         }],
+        completedGames: {
+            type: Map,
+            of: Boolean,
+            default: {}
+        },
+        currentGameIndex: {
+            type: Number,
+            default: 0
+        },
         lastUpdated: {
             type: Date,
             default: Date.now

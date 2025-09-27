@@ -1,0 +1,171 @@
+import React, { useState, useEffect } from 'react';
+import { Clock, CheckCircle, XCircle, Trophy } from 'lucide-react';
+
+const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isCompleted = false }) => {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(timeLimit);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
+
+  useEffect(() => {
+    if (isCompleted) {
+      setQuizCompleted(true);
+      setScore(questions.length);
+      return;
+    }
+
+    if (timeLeft > 0 && !quizCompleted) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0 && !quizCompleted) {
+      setQuizCompleted(true);
+      if (score >= requiredCorrect && !hasCalledCompletion) {
+        setHasCalledCompletion(true);
+        setTimeout(() => onComplete && onComplete(), 1000);
+      }
+    }
+  }, [timeLeft, quizCompleted, score, requiredCorrect, hasCalledCompletion, questions.length, isCompleted]);
+
+  const handleAnswerSelect = (answerIndex) => {
+    if (showResult || quizCompleted || isCompleted) return;
+    setSelectedAnswer(answerIndex);
+  };
+
+  const handleSubmit = () => {
+    if (selectedAnswer === null || quizCompleted || isCompleted) return;
+    
+    setShowResult(true);
+    
+    if (selectedAnswer === questions[currentQuestion].correct) {
+      setScore(score + 1);
+    }
+    
+    setTimeout(() => {
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+        setSelectedAnswer(null);
+        setShowResult(false);
+      } else {
+        setQuizCompleted(true);
+        if (score + (selectedAnswer === questions[currentQuestion].correct ? 1 : 0) >= requiredCorrect && !hasCalledCompletion) {
+          setHasCalledCompletion(true);
+          setTimeout(() => onComplete && onComplete(), 1000);
+        }
+      }
+    }, 1500);
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const currentQ = questions[currentQuestion];
+
+  if (quizCompleted || isCompleted) {
+    const finalScore = isCompleted ? questions.length : score;
+    const passed = finalScore >= requiredCorrect;
+    
+    return (
+      <div className="bg-white border-2 border-red-600 rounded-lg p-6 text-center">
+        <div className="mb-4">
+          <Trophy className={`w-16 h-16 mx-auto mb-4 ${passed ? 'text-yellow-500' : 'text-gray-400'}`} />
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">
+            {isCompleted ? 'Quiz Completed!' : (passed ? 'Quiz Complete!' : 'Time\'s Up!')}
+          </h3>
+          <p className="text-gray-600 mb-4">
+            {isCompleted ? `Final Score: ${finalScore}/${questions.length}` : `Final Score: ${finalScore}/${questions.length}`}
+          </p>
+          <p className={`text-lg font-medium ${passed ? 'text-green-600' : 'text-red-600'}`}>
+            {passed ? `✅ You passed! (Need ${requiredCorrect}+ correct)` : `❌ You need ${requiredCorrect}+ correct to pass`}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white border-2 border-red-600 rounded-lg p-6">
+      <div className="flex justify-between items-center mb-6">
+        <div className="flex items-center space-x-2">
+          <Clock className="w-5 h-5 text-red-600" />
+          <span className={`text-lg font-bold ${timeLeft <= 10 ? 'text-red-600' : 'text-gray-800'}`}>
+            {formatTime(timeLeft)}
+          </span>
+        </div>
+        <div className="text-sm text-gray-600">
+          Question {currentQuestion + 1} of {questions.length}
+        </div>
+        <div className="text-sm text-gray-600">
+          Score: {score}/{questions.length}
+        </div>
+      </div>
+
+      <div className="mb-6">
+        <h3 className="text-lg font-bold text-gray-800 mb-4">{currentQ.question}</h3>
+        <div className="space-y-3">
+          {currentQ.options.map((option, index) => {
+            const isSelected = selectedAnswer === index;
+            const isCorrect = index === currentQ.correct;
+            const isWrong = showResult && isSelected && !isCorrect;
+            
+            return (
+              <button
+                key={index}
+                onClick={() => handleAnswerSelect(index)}
+                disabled={showResult || quizCompleted}
+                className={`w-full p-4 text-left rounded-lg border-2 transition-all duration-200 ${
+                  showResult
+                    ? isCorrect
+                      ? 'bg-green-100 border-green-500 text-green-800'
+                      : isWrong
+                        ? 'bg-red-100 border-red-500 text-red-800'
+                        : 'bg-gray-100 border-gray-300 text-gray-600'
+                    : isSelected
+                      ? 'bg-red-100 border-red-500 text-red-800'
+                      : 'bg-white border-gray-300 hover:border-red-500 hover:bg-red-50'
+                } ${(showResult || quizCompleted) ? 'cursor-default' : 'cursor-pointer'}`}
+              >
+                <div className="flex items-center justify-between">
+                  <span>{option}</span>
+                  {showResult && (
+                    <>
+                      {isCorrect && <CheckCircle className="w-5 h-5 text-green-600" />}
+                      {isWrong && <XCircle className="w-5 h-5 text-red-600" />}
+                    </>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {selectedAnswer !== null && !showResult && (
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold"
+        >
+          Submit Answer
+        </button>
+      )}
+
+      {showResult && (
+        <div className="text-center">
+          <p className="text-gray-600 mb-2">
+            {selectedAnswer === currentQ.correct ? '✅ Correct!' : '❌ Wrong answer!'}
+          </p>
+          <p className="text-sm text-gray-500">
+            {currentQuestion < questions.length - 1 ? 'Next question in 1.5s...' : 'Calculating final score...'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default QuickQuiz;

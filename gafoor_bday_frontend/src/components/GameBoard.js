@@ -165,7 +165,7 @@ const GameBoard = () => {
           ))}
 
           {/* Final completion screen */}
-          {completedClues.length >= 7 && (
+          {completedClues.length >= 8 && (
             <div className="text-center p-8 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg border-2 border-green-500">
               <h2 className="text-4xl font-bold text-green-600 mb-4">
                 🎉 HAPPY BIRTHDAY SIMRAN! 🎉

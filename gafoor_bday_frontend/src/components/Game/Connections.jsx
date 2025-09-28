@@ -1,37 +1,18 @@
 import React, { useState } from 'react';
 import { CheckCircle, RotateCcw } from 'lucide-react';
 
-const Connections = ({ categories, onComplete, isCompleted = false }) => {
+const Connections = ({ categories, items: allItems, onComplete, isCompleted = false }) => {
   const [selectedItems, setSelectedItems] = useState([]);
   const [completedCategories, setCompletedCategories] = useState([]);
   const [gameCompleted, setGameCompleted] = useState(false);
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
+  const [showSkipModal, setShowSkipModal] = useState(false);
+  const [skipPassword, setSkipPassword] = useState('');
 
-  // Placeholder items for TJ Maxx categories
-  const items = [
-    // TJ Maxx Items
-    { text: "Handbags", category: 0 },
-    { text: "Jewelry", category: 0 },
-    { text: "Shoes", category: 0 },
-    { text: "Clothing", category: 0 },
-    
-    // Categories
-    { text: "Electronics", category: 1 },
-    { text: "Home Decor", category: 1 },
-    { text: "Beauty", category: 1 },
-    { text: "Accessories", category: 1 },
-    
-    // Placeholder categories
-    { text: "Item 1", category: 2 },
-    { text: "Item 2", category: 2 },
-    { text: "Item 3", category: 2 },
-    { text: "Item 4", category: 2 },
-    
-    { text: "Item 5", category: 3 },
-    { text: "Item 6", category: 3 },
-    { text: "Item 7", category: 3 },
-    { text: "Item 8", category: 3 }
-  ];
+  // Randomize items on component mount
+  const [items] = useState(() => {
+    return [...allItems].sort(() => Math.random() - 0.5);
+  });
 
   const handleItemClick = (item) => {
     if (gameCompleted || isCompleted) return;
@@ -69,6 +50,26 @@ const Connections = ({ categories, onComplete, isCompleted = false }) => {
     }
   };
 
+  const handleSkipGame = () => {
+    if (skipPassword === 'jainish') {
+      setGameCompleted(true);
+      setHasCalledCompletion(true);
+      setTimeout(() => {
+        onComplete && onComplete();
+      }, 1000);
+      setShowSkipModal(false);
+      setSkipPassword('');
+    } else {
+      alert('Incorrect password!');
+    }
+  };
+
+  const handleSkipKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSkipGame();
+    }
+  };
+
   const getItemStyle = (item) => {
     const isSelected = selectedItems.includes(item.text);
     const isCompleted = completedCategories.includes(item.category);
@@ -101,7 +102,15 @@ const Connections = ({ categories, onComplete, isCompleted = false }) => {
   return (
     <div className="bg-white border-2 border-red-600 rounded-lg p-6">
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-gray-800 mb-2">Connections Game</h3>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-bold text-gray-800">Connections Game</h3>
+          <button
+            onClick={() => setShowSkipModal(true)}
+            className="text-sm text-orange-600 hover:text-orange-700 px-2 py-1 border border-orange-300 rounded"
+          >
+            Skip Game
+          </button>
+        </div>
         <p className="text-sm text-gray-600 mb-4">
           Find groups of four items that share something in common. Select 4 items and click "Check" to see if they're connected.
         </p>
@@ -163,6 +172,43 @@ const Connections = ({ categories, onComplete, isCompleted = false }) => {
       <div className="mt-4 text-sm text-gray-500 text-center">
         Select 4 items that belong to the same category
       </div>
+
+      {/* Skip Game Modal */}
+      {showSkipModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Skip Game</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Enter password to skip this game:
+            </p>
+            <input
+              type="password"
+              value={skipPassword}
+              onChange={(e) => setSkipPassword(e.target.value)}
+              onKeyPress={handleSkipKeyPress}
+              placeholder="Password: jainish"
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleSkipGame}
+                className="flex-1 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition-colors"
+              >
+                Skip Game
+              </button>
+              <button
+                onClick={() => {
+                  setShowSkipModal(false);
+                  setSkipPassword('');
+                }}
+                className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

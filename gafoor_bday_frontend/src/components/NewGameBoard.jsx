@@ -175,7 +175,7 @@ const NewGameBoard = () => {
       case 'QuickQuiz':
         return <QuickQuiz questions={game.questions} timeLimit={game.timeLimit} requiredCorrect={game.requiredCorrect} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'TextInput':
-        return <TextInput question={game.question} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+        return <TextInput question={game.question} options={game.options} correctAnswer={game.answer} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'ImageGuess':
         return <ImageGuess imageUrl={game.imageUrl} question={game.question} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'VideoGuess':
@@ -183,13 +183,13 @@ const NewGameBoard = () => {
       case 'Wordle':
         return <Wordle answer={game.answer} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'Connections':
-        return <Connections categories={game.categories} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+        return <Connections categories={game.categories} items={game.items} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'Placeholder':
         return <Placeholder description={game.description} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'MultipleChoice':
         return <MultipleChoice question={game.question} options={game.options} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'AudioGuess':
-        return <AudioGuess audioUrl={game.audioUrl} question={game.question} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+        return <AudioGuess audioUrl={game.audioUrl} question={game.question} answers={game.answers} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       default:
         return <div className="text-center text-gray-500">Unknown game component: {game.component}</div>;
     }

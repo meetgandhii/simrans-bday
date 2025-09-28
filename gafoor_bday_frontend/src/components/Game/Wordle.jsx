@@ -6,6 +6,8 @@ const Wordle = ({ answer, onComplete, isCompleted = false }) => {
   const [currentGuess, setCurrentGuess] = useState('');
   const [gameCompleted, setGameCompleted] = useState(false);
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
+  const [showSkipModal, setShowSkipModal] = useState(false);
+  const [skipPassword, setSkipPassword] = useState('');
 
   const MAX_GUESSES = 6;
   const WORD_LENGTH = 5;
@@ -38,6 +40,26 @@ const Wordle = ({ answer, onComplete, isCompleted = false }) => {
     }
   };
 
+  const handleSkipGame = () => {
+    if (skipPassword === 'jainish') {
+      setGameCompleted(true);
+      setHasCalledCompletion(true);
+      setTimeout(() => {
+        onComplete && onComplete();
+      }, 1000);
+      setShowSkipModal(false);
+      setSkipPassword('');
+    } else {
+      alert('Incorrect password!');
+    }
+  };
+
+  const handleSkipKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSkipGame();
+    }
+  };
+
   const getLetterStatus = (letter, position, guess) => {
     if (letter === answer[position]) return 'correct';
     if (answer.includes(letter)) return 'present';
@@ -57,7 +79,7 @@ const Wordle = ({ answer, onComplete, isCompleted = false }) => {
           <p className="text-gray-600 mb-4">
             {isCompleted ? `The word was: ${answer}` : (won ? `You guessed it in ${guesses.length} tries!` : `The word was: ${answer}`)}
           </p>
-          {!isCompleted && (
+          {!isCompleted && !won && (
             <button
               onClick={() => {
                 setGuesses([]);
@@ -79,7 +101,15 @@ const Wordle = ({ answer, onComplete, isCompleted = false }) => {
   return (
     <div className="bg-white border-2 border-red-600 rounded-lg p-6">
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-gray-800 mb-2">Wordle Challenge</h3>
+        <div className="flex justify-between items-center mb-2">
+          <h3 className="text-lg font-bold text-gray-800">Wordle Challenge</h3>
+          <button
+            onClick={() => setShowSkipModal(true)}
+            className="text-sm text-orange-600 hover:text-orange-700 px-2 py-1 border border-orange-300 rounded"
+          >
+            Skip Game
+          </button>
+        </div>
         <p className="text-sm text-gray-600 mb-4">
           Guess the 5-letter word. You have {MAX_GUESSES - guesses.length} guesses left.
         </p>
@@ -139,6 +169,43 @@ const Wordle = ({ answer, onComplete, isCompleted = false }) => {
       <div className="mt-4 text-sm text-gray-500 text-center">
         Type your guess and press Enter or click Guess
       </div>
+
+      {/* Skip Game Modal */}
+      {showSkipModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-sm w-full mx-4">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Skip Game</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Enter password to skip this game:
+            </p>
+            <input
+              type="password"
+              value={skipPassword}
+              onChange={(e) => setSkipPassword(e.target.value)}
+              onKeyPress={handleSkipKeyPress}
+              placeholder="Password: 5555"
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={handleSkipGame}
+                className="flex-1 bg-orange-600 text-white px-4 py-2 rounded hover:bg-orange-700 transition-colors"
+              >
+                Skip Game
+              </button>
+              <button
+                onClick={() => {
+                  setShowSkipModal(false);
+                  setSkipPassword('');
+                }}
+                className="flex-1 bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

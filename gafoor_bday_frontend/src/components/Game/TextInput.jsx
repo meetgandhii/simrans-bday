@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle } from 'lucide-react';
 
-const TextInput = ({ question, onComplete, isCompleted = false }) => {
+const TextInput = ({ question, options, correctAnswer, onComplete, isCompleted = false }) => {
   const [answer, setAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
@@ -77,6 +77,19 @@ const TextInput = ({ question, onComplete, isCompleted = false }) => {
         </div>
         <p className="text-gray-600 mb-4">{question}</p>
       </div>
+
+      {/* Display options if provided */}
+      {options && options.length > 0 && (
+        <div className="mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {options.map((option, index) => (
+              <div key={index} className="bg-gray-50 border border-gray-200 rounded-lg p-3 text-center">
+                <span className="text-gray-700 font-medium">{option}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="space-y-4">
         <div>

@@ -133,7 +133,32 @@ const CLUES = [
         id: 2,
         title: "Connections Game",
         component: "Connections",
-        categories: ["TJ Maxx Items", "Categories", "Placeholder", "Placeholder"],
+        categories: ["Home Décor", "Women's Fashion", "Kitchen & Dining", "Beauty & Skincare"],
+        items: [
+          // Home Décor - category 0
+          { text: "Marble lamp", category: 0 },
+          { text: "Velvet throw", category: 0 },
+          { text: "Glass holders", category: 0 },
+          { text: "Jute stool", category: 0 },
+          
+          // Women's Fashion - category 1
+          { text: "Faux bag", category: 1 },
+          { text: "Linen blazer", category: 1 },
+          { text: "Velvet skirt", category: 1 },
+          { text: "Suede boots", category: 1 },
+          
+          // Kitchen & Dining - category 2
+          { text: "Salt jar", category: 2 },
+          { text: "Stone plates", category: 2 },
+          { text: "Linen napkins", category: 2 },
+          { text: "Copper tongs", category: 2 },
+          
+          // Beauty & Skincare - category 3
+          { text: "Charcoal bar", category: 3 },
+          { text: "Velvet powder", category: 3 },
+          { text: "Argan cream", category: 3 },
+          { text: "Jade roller", category: 3 }
+        ],
         points: 100
       },
       {
@@ -169,7 +194,7 @@ const CLUES = [
       //   points: 100
       // }
     ],
-    finalAnswer: "arboretum",
+    finalAnswer: "arnold arboretum",
     location: { lat: 42.3014, lng: -71.1249, name: "Arnold Arboretum" },
     bonusTask: "Make a birthday wish",
     points: { bonus: 50 }
@@ -182,17 +207,19 @@ const CLUES = [
       {
         id: 1,
         title: "Common Thing Identification",
-        component: "MultipleChoice",
-        options: ["placeholder_1", "placeholder_2", "placeholder_3", "placeholder_4"],
-        question: "Identify the common thing here",
+        component: "TextInput",
+        question: "Look at these items and identify what they have in common:",
+        options: ["Monaco", "Red", "Leo", "16"],
+        answer: "charles",
         points: 100
       },
       {
         id: 2,
         title: "Song Theme Guessing",
         component: "AudioGuess",
-        audioUrl: "/images/paani-da-rang.mp3",
+        audioUrl: "/images/song.mp3",
         question: "Identify the theme from this song",
+        answers: ["charles", "water", "paani", "river", "charles river"],
         points: 100
       }
     ],

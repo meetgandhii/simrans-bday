@@ -9,6 +9,8 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
   const [timeLeft, setTimeLeft] = useState(timeLimit);
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
+  const [showSkipModal, setShowSkipModal] = useState(false);
+  const [skipPassword, setSkipPassword] = useState('');
 
   useEffect(() => {
     if (isCompleted) {
@@ -64,6 +66,27 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const handleSkipGame = () => {
+    if (skipPassword === 'jainish') {
+      setQuizCompleted(true);
+      setScore(questions.length); // Perfect score
+      setHasCalledCompletion(true);
+      setTimeout(() => {
+        onComplete && onComplete();
+      }, 1000);
+      setShowSkipModal(false);
+      setSkipPassword('');
+    } else {
+      alert('Incorrect password!');
+    }
+  };
+
+  const handleSkipKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSkipGame();
+    }
+  };
+
   const currentQ = questions[currentQuestion];
 
   if (quizCompleted || isCompleted) {
@@ -97,11 +120,19 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
             {formatTime(timeLeft)}
           </span>
         </div>
-        <div className="text-sm text-gray-600">
-          Question {currentQuestion + 1} of {questions.length}
-        </div>
-        <div className="text-sm text-gray-600">
-          Score: {score}/{questions.length}
+        <div className="flex items-center space-x-4">
+          <div className="text-sm text-gray-600">
+            Question {currentQuestion + 1} of {questions.length}
+          </div>
+          <div className="text-sm text-gray-600">
+            Score: {score}/{questions.length}
+          </div>
+          <button
+            onClick={() => setShowSkipModal(true)}
+            className="text-sm text-orange-600 hover:text-orange-700 px-2 py-1 border border-orange-300 rounded"
+          >
+            Skip Game
+          </button>
         </div>
       </div>
 
@@ -162,6 +193,44 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
           <p className="text-sm text-gray-500">
             {currentQuestion < questions.length - 1 ? 'Next question in 1.5s...' : 'Calculating final score...'}
           </p>
+        </div>
+      )}
+
+      {/* Skip Modal */}
+      {showSkipModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Skip This Game</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Enter password to skip this game:
+            </p>
+            <input
+              type="password"
+              value={skipPassword}
+              onChange={(e) => setSkipPassword(e.target.value)}
+              onKeyPress={handleSkipKeyPress}
+              placeholder="Password: 5555"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 mb-4"
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setShowSkipModal(false);
+                  setSkipPassword('');
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSkipGame}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Skip Game
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

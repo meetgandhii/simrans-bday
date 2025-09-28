@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 const ShoppingList = ({ items, onComplete, isCompleted = false }) => {
   const [checkedItems, setCheckedItems] = useState(new Set());
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
+  const [showSkipModal, setShowSkipModal] = useState(false);
+  const [skipPassword, setSkipPassword] = useState('');
 
   const handleCheck = (index) => {
     if (isCompleted) return;
@@ -38,11 +40,41 @@ const ShoppingList = ({ items, onComplete, isCompleted = false }) => {
     return firstLetters;
   };
 
+  const handleSkipGame = () => {
+    if (skipPassword === 'jainish') {
+      // Mark all items as checked
+      const allItemsChecked = new Set(items.map((_, index) => index));
+      setCheckedItems(allItemsChecked);
+      setHasCalledCompletion(true);
+      setTimeout(() => {
+        onComplete && onComplete();
+      }, 1000);
+      setShowSkipModal(false);
+      setSkipPassword('');
+    } else {
+      alert('Incorrect password!');
+    }
+  };
+
+  const handleSkipKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSkipGame();
+    }
+  };
+
   return (
     <div className="bg-white border-2 border-f1-red rounded-lg p-4">
-      <h3 className="font-bold text-gray-800 mb-3 text-center">
-        Shopping List Challenge
-      </h3>
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="font-bold text-gray-800">
+          Shopping List Challenge
+        </h3>
+        <button
+          onClick={() => setShowSkipModal(true)}
+          className="text-sm text-orange-600 hover:text-orange-700 px-2 py-1 border border-orange-300 rounded"
+        >
+          Skip Game
+        </button>
+      </div>
       <p className="text-sm text-gray-600 mb-4 text-center">
         Check all items to reveal the hidden message!
       </p>
@@ -98,6 +130,44 @@ const ShoppingList = ({ items, onComplete, isCompleted = false }) => {
           </div>
         )}
       </div>
+
+      {/* Skip Modal */}
+      {showSkipModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">Skip This Game</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Enter password to skip this game:
+            </p>
+            <input
+              type="password"
+              value={skipPassword}
+              onChange={(e) => setSkipPassword(e.target.value)}
+              onKeyPress={handleSkipKeyPress}
+              placeholder="Password: 5555"
+              className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 mb-4"
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  setShowSkipModal(false);
+                  setSkipPassword('');
+                }}
+                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSkipGame}
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Skip Game
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

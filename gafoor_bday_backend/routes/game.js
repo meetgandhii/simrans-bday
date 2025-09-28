@@ -9,16 +9,34 @@ const router = express.Router();
 const CLUES = [
   {
     id: 1,
-    title: "Step 1: Trader Joe's Adventure",
-    description: "Complete 3 games to unlock the first location!",
+    title: "Step 1: Dunkin' Discovery",
+    description: "Complete 1 game to unlock the Dunkin' location!",
     games: [
       {
         id: 1,
-        title: "Word Search Challenge",
-        component: "WordSearch",
-        words: ["TRADER", "JOES", "BOYLSTON", "CHIPS", "JERK"],
+        title: "Guess",
+        component: "TextInput",
+        question: "Placeholder",
         points: 100
-      },
+      }
+    ],
+    finalAnswer: "placeholder",
+    location: { lat: 42.3515, lng: -71.0795, name: "Dunkin'" },
+    bonusTask: "Take a selfie with the store sign",
+    points: { bonus: 50 }
+  },
+  {
+    id: 2,
+    title: "Step 2: Trader Joe's Adventure",
+    description: "Complete 3 games to unlock the first location!",
+    games: [
+        {
+          id: 1,
+          title: "Word Search Challenge",
+          component: "WordSearch",
+          words: ["CHILI", "LIME", "CHIPS", "GARLIC", "DIP", "VEGETABLE", "ROOT", "STRAWBERRY", "POPCORN", "CRUNCHY", "OKRA", "JERK", "STYLE", "PLANTAIN"],
+          points: 100
+        },
       {
         id: 2,
         title: "Quick Quiz (30 seconds)",
@@ -48,8 +66,8 @@ const CLUES = [
     points: { bonus: 50 }
   },
   {
-    id: 2,
-    title: "Step 2: Nike Discovery",
+    id: 3,
+    title: "Step 3: Nike Discovery",
     description: "Complete 2 games to unlock the Nike location!",
     games: [
       {
@@ -68,14 +86,14 @@ const CLUES = [
         points: 100
       }
     ],
-    finalAnswer: "nike outlet",
+    finalAnswer: "nike",
     location: { lat: 42.3502, lng: -71.0759, name: "Nike Store" },
     bonusTask: "Take a victory lap around the store",
     points: { bonus: 50 }
   },
   {
-    id: 3,
-    title: "Step 3: JP Licks Mystery",
+    id: 4,
+    title: "Step 4: JP Licks Mystery",
     description: "Complete 2 challenges to unlock JP Licks!",
     games: [
       {
@@ -100,8 +118,8 @@ const CLUES = [
     points: { bonus: 50 }
   },
   {
-    id: 4,
-    title: "Step 4: TJ Maxx Adventure",
+    id: 5,
+    title: "Step 5: TJ Maxx Adventure",
     description: "Complete 2 games to unlock TJ Maxx!",
     games: [
       {
@@ -132,8 +150,8 @@ const CLUES = [
     points: { bonus: 50 }
   },
   {
-    id: 5,
-    title: "Step 5: Arnold Arboretum",
+    id: 6,
+    title: "Step 6: Arnold Arboretum",
     description: "Complete challenges to unlock the Arboretum!",
     games: [
       {
@@ -157,8 +175,8 @@ const CLUES = [
     points: { bonus: 50 }
   },
   {
-    id: 6,
-    title: "Step 6: Charles River Quest",
+    id: 7,
+    title: "Step 7: Charles River Quest",
     description: "Complete 2 final challenges!",
     games: [
       {
@@ -184,8 +202,8 @@ const CLUES = [
     points: { bonus: 50 }
   },
   {
-    id: 7,
-    title: "Step 7: Final Celebration",
+    id: 8,
+    title: "Step 8: Final Celebration",
     description: "You've completed the journey! Time to celebrate!",
     games: [],
     finalAnswer: "celebration",
@@ -285,8 +303,20 @@ router.post('/complete-clue', auth, async (req, res) => {
     }
 
     // Validate answer
-    const isCorrect = clue.finalAnswer &&
-      answer.toLowerCase().includes(clue.finalAnswer.toLowerCase());
+    let isCorrect = false;
+    if (clue.finalAnswer) {
+      const answerLower = answer.toLowerCase();
+      const finalAnswerLower = clue.finalAnswer.toLowerCase();
+      
+      // Special case for Nike - accept multiple variations
+      if (finalAnswerLower === "nike") {
+        isCorrect = answerLower.includes("nike") || 
+                   answerLower.includes("nike outlet") || 
+                   answerLower.includes("nike store");
+      } else {
+        isCorrect = answerLower.includes(finalAnswerLower);
+      }
+    }
 
     if (!isCorrect) {
       return res.status(400).json({ message: 'Incorrect answer' });
@@ -425,6 +455,52 @@ router.post('/admin/skip-clue', auth, adminAuth, async (req, res) => {
     });
   } catch (error) {
     console.error('Skip clue error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Admin endpoint to reset user progress by email
+router.post('/admin/reset-progress', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+    
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found with this email' });
+    }
+    
+    // Reset user progress
+    user.gameProgress = {
+      currentClue: 1,
+      completedClues: [],
+      completedTasks: [],
+      completedGames: new Map(),
+      currentGameIndex: 0,
+      lastUpdated: new Date()
+    };
+    
+    user.totalScore = 0;
+    user.availablePoints = 0;
+    
+    await user.save();
+    
+    res.json({ 
+      message: 'User progress reset successfully',
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        currentClue: user.gameProgress.currentClue,
+        completedClues: user.gameProgress.completedClues,
+        totalScore: user.totalScore
+      }
+    });
+  } catch (error) {
+    console.error('Reset progress error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

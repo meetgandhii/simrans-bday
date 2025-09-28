@@ -64,6 +64,16 @@ const NewGameBoard = () => {
   useEffect(() => {
     const step = clues.find(c => c.id === currentStep);
     if (step && step.games) {
+      // Special handling for final step (step 8) - no final answer input
+      if (currentStep === 8) {
+        setShowFinalAnswer(false);
+        // Auto-complete step 8 if it has no games
+        if (step.games.length === 0) {
+          setStepCompleted(prev => ({ ...prev, [currentStep]: true }));
+        }
+        return;
+      }
+      
       // Find the first incomplete game
       const nextGameIndex = step.games.findIndex(game => {
         const gameKey = `${currentStep}-${game.id}`;
@@ -104,8 +114,15 @@ const NewGameBoard = () => {
           // Move to next game in the same step
           setCurrentGameIndex(currentGameIndexInStep + 1);
         } else {
-          // All games completed, show final answer input
-          setShowFinalAnswer(true);
+          // All games completed in this step
+          if (stepId === 8) {
+            // Special handling for final step - auto-complete without final answer input
+            await gameAPI.completeClue(stepId, 'celebration');
+            setStepCompleted(prev => ({ ...prev, [stepId]: true }));
+          } else {
+            // Show final answer input for other steps
+            setShowFinalAnswer(true);
+          }
         }
       }
       
@@ -206,13 +223,13 @@ const NewGameBoard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50 p-2 sm:p-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6">
           {/* F1 Theme Header */}
-          <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">F1 Birthday Hunt</h1>
-            <p className="text-lg italic text-gray-600 mb-4">
+          <div className="text-center mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-2">F1 Birthday Hunt</h1>
+            <p className="text-sm sm:text-lg italic text-gray-600 mb-4">
               "Smooth operator... smooth operation" - Carlos Sainz
             </p>
             <div className="h-2 bg-gradient-to-r from-red-600 to-black rounded"></div>
@@ -228,13 +245,13 @@ const NewGameBoard = () => {
             if (!isActive && !isCompleted) return null;
 
             return (
-              <div key={step.id} className="mb-8">
+              <div key={step.id} className="mb-4 sm:mb-8">
                 {/* Step Header */}
                 <div className="bg-gradient-to-r from-red-600 to-red-700 text-white rounded-lg p-4 mb-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
                     <div>
-                      <h2 className="text-xl font-bold">{step.title}</h2>
-                      <p className="text-red-100">{step.description}</p>
+                      <h2 className="text-lg sm:text-xl font-bold">{step.title}</h2>
+                      <p className="text-sm sm:text-base text-red-100">{step.description}</p>
                     </div>
                     <div className="text-right">
                       <div className="text-2xl font-bold">{step.id}</div>
@@ -263,7 +280,7 @@ const NewGameBoard = () => {
                 )}
 
                 {/* Final Answer Input */}
-                {isActive && showFinalAnswer && (
+                {isActive && showFinalAnswer && currentStep !== 8 && (
                   <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-4">
                     <h3 className="text-lg font-bold text-yellow-800 mb-2">🎯 Final Challenge!</h3>
                     <p className="text-yellow-700 mb-3">
@@ -312,11 +329,28 @@ const NewGameBoard = () => {
           })}
 
           {/* Final completion screen */}
-          {stepCompleted[7] && (
+          {stepCompleted[8] && (
             <div className="text-center p-8 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg border-2 border-green-500">
-              <h2 className="text-4xl font-bold text-green-600 mb-4">
-                🎉 HAPPY BIRTHDAY SIMRAN! 🎉
+              <h2 className="text-4xl font-bold text-green-600 mb-6">
+                🎉 CONGRATULATIONS! 🎉
               </h2>
+              <h3 className="text-3xl font-bold text-red-600 mb-6">
+                🎂 HAPPY BIRTHDAY SIMRAN! 🎂
+              </h3>
+              
+              {/* Birthday GIF */}
+              <div className="mb-6">
+                <img 
+                  src="/images/saat-crore.gif" 
+                  alt="Birthday Celebration" 
+                  className="mx-auto max-w-full h-auto max-h-96 sm:max-h-[500px] rounded-lg shadow-lg"
+                  onError={(e) => {
+                    console.error('GIF failed to load:', '/images/saat-crore.gif');
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+
               <div className="space-y-2 text-lg">
                 <p>Final Score: <span className="font-bold text-2xl text-red-600">{user?.totalScore || 0}</span> points</p>
                 <p className="text-xl font-medium text-green-700">F1 Champion! 🏆</p>

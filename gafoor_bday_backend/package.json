@@ -1,7 +1,7 @@
 {
   "name": "f1-hunt-backend",
   "version": "1.0.0",
-  "description": "F1 Birthday Hunt Backend API",
+  "description": "Birthday Treasure Hunt Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1,23 +1,41 @@
 import React, { useState } from 'react';
 import { Send, CheckCircle, Image as ImageIcon } from 'lucide-react';
 
-const ImageGuess = ({ imageUrl, question, onComplete, isCompleted = false }) => {
+const ImageGuess = ({ imageUrl, question, answers, onComplete, isCompleted = false }) => {
   const [answer, setAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
   const [showSkipModal, setShowSkipModal] = useState(false);
   const [skipPassword, setSkipPassword] = useState('');
+  const [isCorrect, setIsCorrect] = useState(null);
 
   const handleSubmit = () => {
     if (!answer.trim() || submitted || isCompleted) return;
     
     setSubmitted(true);
     
-    if (!hasCalledCompletion && !isCompleted) {
-      setHasCalledCompletion(true);
-      setTimeout(() => {
-        onComplete && onComplete();
-      }, 1000);
+    // Check if answer is correct (only if answers array is provided)
+    if (answers && answers.length > 0) {
+      const userAnswer = answer.trim().toLowerCase();
+      const correctAnswers = answers.map(a => a.toLowerCase());
+      const isAnswerCorrect = correctAnswers.includes(userAnswer);
+      setIsCorrect(isAnswerCorrect);
+      
+      // Only complete the game if answer is correct
+      if (!hasCalledCompletion && !isCompleted && isAnswerCorrect) {
+        setHasCalledCompletion(true);
+        setTimeout(() => {
+          onComplete && onComplete();
+        }, 1000);
+      }
+    } else {
+      // If no answers provided, complete the game anyway (legacy behavior)
+      if (!hasCalledCompletion && !isCompleted) {
+        setHasCalledCompletion(true);
+        setTimeout(() => {
+          onComplete && onComplete();
+        }, 1000);
+      }
     }
   };
 

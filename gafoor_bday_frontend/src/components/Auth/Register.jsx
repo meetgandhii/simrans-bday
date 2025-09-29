@@ -78,7 +78,7 @@ const Register = ({ onSwitchToLogin }) => {
               <Car className="w-8 h-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">F1 Birthday Hunt</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Birthday Treasure Hunt</h1>
           <p className="text-gray-600">Join the race, champion!</p>
         </div>
 

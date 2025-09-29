@@ -8,7 +8,7 @@ const Header = ({ user, onLogout, totalScore }) => {
         <div className="flex items-center space-x-4">
           <h1 className="text-2xl font-bold text-f1-red flex items-center space-x-2">
             <span>🏎️</span>
-            <span>F1 Birthday Hunt</span>
+            <span>Birthday Treasure Hunt</span>
           </h1>
           {user.isAdmin && (
             <span className="bg-yellow-400 text-black px-2 py-1 rounded text-sm font-bold">

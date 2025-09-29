@@ -7,17 +7,34 @@ const TextInput = ({ question, options, correctAnswer, onComplete, isCompleted =
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
   const [showSkipModal, setShowSkipModal] = useState(false);
   const [skipPassword, setSkipPassword] = useState('');
+  const [isCorrect, setIsCorrect] = useState(null);
 
   const handleSubmit = () => {
     if (!answer.trim() || submitted || isCompleted) return;
     
     setSubmitted(true);
     
-    if (!hasCalledCompletion && !isCompleted) {
-      setHasCalledCompletion(true);
-      setTimeout(() => {
-        onComplete && onComplete();
-      }, 1000);
+    // Check if answer is correct (only if correctAnswer is provided)
+    if (correctAnswer) {
+      const userAnswer = answer.trim().toLowerCase();
+      const isAnswerCorrect = userAnswer === correctAnswer.toLowerCase();
+      setIsCorrect(isAnswerCorrect);
+      
+      // Only complete the game if answer is correct
+      if (!hasCalledCompletion && !isCompleted && isAnswerCorrect) {
+        setHasCalledCompletion(true);
+        setTimeout(() => {
+          onComplete && onComplete();
+        }, 1000);
+      }
+    } else {
+      // If no correctAnswer provided, complete the game anyway (legacy behavior)
+      if (!hasCalledCompletion && !isCompleted) {
+        setHasCalledCompletion(true);
+        setTimeout(() => {
+          onComplete && onComplete();
+        }, 1000);
+      }
     }
   };
 
@@ -51,13 +68,27 @@ const TextInput = ({ question, options, correctAnswer, onComplete, isCompleted =
     return (
       <div className="bg-white border-2 border-red-600 rounded-lg p-6 text-center">
         <div className="mb-4">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <CheckCircle className={`w-16 h-16 mx-auto mb-4 ${isCompleted ? 'text-green-500' : (isCorrect === true ? 'text-green-500' : (isCorrect === false ? 'text-red-500' : 'text-gray-400'))}`} />
           <h3 className="text-xl font-bold text-gray-800 mb-2">
-            {isCompleted ? 'Challenge Completed!' : 'Answer Submitted!'}
+            {isCompleted ? 'Challenge Completed!' : (isCorrect === true ? 'Correct Answer!' : (isCorrect === false ? 'Incorrect Answer' : 'Answer Submitted!'))}
           </h3>
           <p className="text-gray-600">
-            {isCompleted ? 'Great job on this challenge!' : 'Your answer has been recorded!'}
+            {isCompleted ? 'Great job on this challenge!' : (isCorrect === true ? 'You got it right! Well done!' : (isCorrect === false ? 'Try again with a different answer.' : 'Your answer has been recorded!'))}
           </p>
+          {isCorrect === false && (
+            <div className="mt-4">
+              <button
+                onClick={() => {
+                  setSubmitted(false);
+                  setIsCorrect(null);
+                  setAnswer('');
+                }}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

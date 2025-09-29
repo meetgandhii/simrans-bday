@@ -44,7 +44,7 @@ const Login = ({ onLogin }) => {
       <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="text-4xl mb-4">🏎️</div>
-          <h1 className="text-2xl font-bold text-f1-red mb-2">F1 Birthday Hunt</h1>
+          <h1 className="text-2xl font-bold text-f1-red mb-2">Birthday Treasure Hunt</h1>
           <p className="text-gray-600">Simran's Racing Adventure</p>
         </div>
         

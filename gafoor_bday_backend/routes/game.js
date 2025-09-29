@@ -8,38 +8,64 @@ const router = express.Router();
 // Game clues configuration - NEW MEGA UPDATE!
 const CLUES = [
   {
+    id: 0,
+    title: "Step 0: Welcome",
+    description: "Welcome to the Birthday Treasure Hunt!",
+    games: [
+      {
+        id: 1,
+        title: "Intro Slideshow",
+        component: "Slideshow",
+        images: [
+          "/images/slideshow/intro-1.jpg",
+          "/images/slideshow/intro-2.jpg", 
+          "/images/slideshow/intro-3.jpg",
+          "/images/slideshow/intro-4.jpg",
+          "/images/slideshow/intro-5.jpg",
+          "/images/slideshow/intro-6.jpg"
+        ],
+        points: 0
+      }
+    ],
+    finalAnswer: "start",
+    location: { lat: 0, lng: 0, name: "Starting Point" },
+    bonusTask: "Get ready for the adventure!",
+    points: { bonus: 0 }
+  },
+  {
     id: 1,
-    title: "Step 1: Dunkin' Discovery",
-    description: "Complete 1 game to unlock the Dunkin' location!",
+    title: "Step 1:",
+    description: "Complete 1 game to unlock the location!",
     games: [
       {
         id: 1,
         title: "Guess",
         component: "TextInput",
-        question: "Placeholder",
+        question: "Birthday girl, don't overthinkin', We're not off hiking or mountain sinkin'. Follow the clues, keep on winkin', It's where the mugs are warm and we're sippin'!",
+        answer: "dunkin",
         points: 100
       }
     ],
-    finalAnswer: "placeholder",
+    finalAnswer: "dunkin",
     location: { lat: 42.3515, lng: -71.0795, name: "Dunkin'" },
     bonusTask: "Take a selfie with the store sign",
     points: { bonus: 50 }
   },
   {
     id: 2,
-    title: "Step 2: Trader Joe's Adventure",
+    title: "Step 2",
     description: "Complete 3 games to unlock the first location!",
     games: [
-        {
-          id: 1,
-          title: "Word Search Challenge",
-          component: "WordSearch",
-          words: ["CHILI", "LIME", "CHIPS", "GARLIC", "DIP", "VEGETABLE", "ROOT", "STRAWBERRY", "POPCORN", "CRUNCHY", "OKRA", "JERK", "STYLE", "PLANTAIN"],
-          points: 100
-        },
+      {
+        id: 1,
+        title: "Word Search Challenge",
+        component: "WordSearch",
+        words: ["CHILI", "LIME", "CHIPS", "GARLIC", "DIP", "VEGETABLE", "ROOT", "STRAWBERRY", "POPCORN", "CRUNCHY", "OKRA", "JERK", "STYLE", "PLANTAIN"],
+        points: 100
+      },
       {
         id: 2,
-        title: "Quick Quiz (30 seconds)",
+        title: "Quick Quiz (60 seconds)",
         component: "QuickQuiz",
         questions: [
           { question: "What is Carlos Sainz's number?", options: ["55", "16", "3", "77"], correct: 0 },
@@ -48,15 +74,16 @@ const CLUES = [
           { question: "How many races in a F1 season?", options: ["20", "22", "24", "26"], correct: 2 },
           { question: "What does DRS stand for?", options: ["Drag Reduction System", "Downforce Reduction System", "Drive Reduction System", "Draft Reduction System"], correct: 0 }
         ],
-        timeLimit: 30,
+        timeLimit: 60,
         requiredCorrect: 3,
         points: 100
       },
       {
         id: 3,
-        title: "Shayari Challenge",
+        title: "Answer the Question",
         component: "TextInput",
         question: "What kinda hoe you like to be?",
+        answer: "trader",
         points: 100
       }
     ],
@@ -67,24 +94,18 @@ const CLUES = [
   },
   {
     id: 3,
-    title: "Step 3: Nike Discovery",
-    description: "Complete 2 games to unlock the Nike location!",
+    title: "Step 3",
+    description: "Complete 2 games to unlock the location!",
     games: [
       {
         id: 1,
         title: "Image Guessing",
         component: "ImageGuess",
         imageUrl: "/images/nike.png",
-        question: "What's common in this image?",
+        question: "Guess the product from this image",
+        answers: ["nike", "shoes", "nike shoes", "sneakers"],
         points: 100
       },
-      {
-        id: 2,
-        title: "N.I.K.E. Shopping List",
-        component: "ShoppingList",
-        items: ["Nuts", "Italian water", "Kale chips", "Energy bars"],
-        points: 100
-      }
     ],
     finalAnswer: "nike",
     location: { lat: 42.3502, lng: -71.0759, name: "Nike Store" },
@@ -93,22 +114,24 @@ const CLUES = [
   },
   {
     id: 4,
-    title: "Step 4: JP Licks Mystery",
-    description: "Complete 2 challenges to unlock JP Licks!",
+    title: "Step 4",
+    description: "Complete 2 challenges to unlock the location!",
     games: [
       {
         id: 1,
         title: "Video Guessing",
         component: "VideoGuess",
         videoUrl: "/images/reel.mp4",
-        question: "Guess the place/theme from this reel",
+        question: "Guess the animal from this reel",
+        answers: ["cow", "cows", "cattle"],
         points: 100
       },
       {
         id: 2,
         title: "Shayari Challenge",
         component: "TextInput",
-        question: "mai hu veeru tu hAi JAI\nmai chahu aditi tujhe mil jaye apna JAI \nye surya ke Kiran mai phigal jaye ice bhi \nmai chahu tu kashmir jaa kar khayie ye bhi \nye next location mai enter karne se pehle chillana Ambe maate ki …..",
+        question: "mai hu veeru tu hai JAI\nmai chahu aditi tujhe mil jaye apna JAI \nye surya ke KIRAN mai phigal jaye ice bhi \nmai chahu tu kashmir jaa kar khayie ye bhi \nye next location mai enter karne se pehle chillana AMBE MAATE KI …..",
+        answer: "jai prakash",
         points: 100
       }
     ],
@@ -119,14 +142,15 @@ const CLUES = [
   },
   {
     id: 5,
-    title: "Step 5: TJ Maxx Adventure",
-    description: "Complete 2 games to unlock TJ Maxx!",
+    title: "Step 5",
+    description: "Complete 2 games to unlock the location!",
     games: [
       {
         id: 1,
-        title: "Wordle Challenge",
-        component: "Wordle",
-        answer: "TJMAX",
+        title: "Shayari Challenge",
+        component: "TextInput",
+        question: "Not MIN but the MAX of birthday cheer for our sister,\nClearance and treasures that sparkle and glitter,\nVerstappen should be sued for stealing this name,\nTwo letters and double X win the bargain game.\nTwo letters and double X win the bargain game.",
+        answer: "tj maxx",
         points: 100
       },
       {
@@ -140,19 +164,19 @@ const CLUES = [
           { text: "Velvet throw", category: 0 },
           { text: "Glass holders", category: 0 },
           { text: "Jute stool", category: 0 },
-          
+
           // Women's Fashion - category 1
           { text: "Faux bag", category: 1 },
           { text: "Linen blazer", category: 1 },
           { text: "Velvet skirt", category: 1 },
           { text: "Suede boots", category: 1 },
-          
+
           // Kitchen & Dining - category 2
           { text: "Salt jar", category: 2 },
           { text: "Stone plates", category: 2 },
           { text: "Linen napkins", category: 2 },
           { text: "Copper tongs", category: 2 },
-          
+
           // Beauty & Skincare - category 3
           { text: "Charcoal bar", category: 3 },
           { text: "Velvet powder", category: 3 },
@@ -163,11 +187,11 @@ const CLUES = [
       },
       {
         id: 3,
-        title: "Shayari Challenge",
-        component: "TextInput",
-        question: "Not MIN but the MAX of birthday cheer for our sister,\nClearance and treasures that sparkle and glitter,\nVerstappen should be sued for stealing this name,\nTwo letters and double X win the bargain game.\nTwo letters and double X win the bargain game.",
+        title: "Wordle Challenge",
+        component: "Wordle",
+        answer: "TJMAX",
         points: 100
-      }
+      },
     ],
     finalAnswer: "tj maxx",
     location: { lat: 42.3501, lng: -71.0764, name: "TJ Maxx" },
@@ -176,23 +200,17 @@ const CLUES = [
   },
   {
     id: 6,
-    title: "Step 6: Arnold Arboretum",
-    description: "Complete challenges to unlock the Arboretum!",
+    title: "Step 6",
+    description: "Complete challenges to unlock the location!",
     games: [
       {
         id: 1,
         title: "Shayari Challenge",
         component: "TextInput",
-        question: "shayari abc",
+        question: "jungle jungle pata chala hai, raste pe chaddi fata pada hai, hiran sallu bhai se bhaga hai, bhaagke dakshin raaste me gaya hai.",
+        answer: "arnold arboretum",
         points: 100
       },
-      // {
-      //   id: 2,
-      //   title: "Placeholder Game",
-      //   component: "Placeholder",
-      //   description: "Coming soon...",
-      //   points: 100
-      // }
     ],
     finalAnswer: "arnold arboretum",
     location: { lat: 42.3014, lng: -71.1249, name: "Arnold Arboretum" },
@@ -201,11 +219,19 @@ const CLUES = [
   },
   {
     id: 7,
-    title: "Step 7: Charles River Quest",
+    title: "Step 7",
     description: "Complete 2 final challenges!",
     games: [
       {
         id: 1,
+        title: "Go To Arnold Arboretum and Paint on the Canvas",
+        component: "TextInput",
+        question: "Type 'bhaang bhosda' when done",
+        answer: "bhaang bhosda",
+        points: 100
+      },
+      {
+        id: 2,
         title: "Common Thing Identification",
         component: "TextInput",
         question: "Look at these items and identify what they have in common:",
@@ -214,12 +240,19 @@ const CLUES = [
         points: 100
       },
       {
-        id: 2,
+        id: 3,
         title: "Song Theme Guessing",
         component: "AudioGuess",
         audioUrl: "/images/song.mp3",
         question: "Identify the theme from this song",
         answers: ["charles", "water", "paani", "river", "charles river"],
+        points: 100
+      },
+      {
+        id: 4,
+        title: "Wordle Challenge",
+        component: "Wordle",
+        answer: "RIVER",
         points: 100
       }
     ],
@@ -334,12 +367,12 @@ router.post('/complete-clue', auth, async (req, res) => {
     if (clue.finalAnswer) {
       const answerLower = answer.toLowerCase();
       const finalAnswerLower = clue.finalAnswer.toLowerCase();
-      
+
       // Special case for Nike - accept multiple variations
       if (finalAnswerLower === "nike") {
-        isCorrect = answerLower.includes("nike") || 
-                   answerLower.includes("nike outlet") || 
-                   answerLower.includes("nike store");
+        isCorrect = answerLower.includes("nike") ||
+          answerLower.includes("nike outlet") ||
+          answerLower.includes("nike store");
       } else {
         isCorrect = answerLower.includes(finalAnswerLower);
       }
@@ -490,16 +523,16 @@ router.post('/admin/skip-clue', auth, adminAuth, async (req, res) => {
 router.post('/admin/reset-progress', async (req, res) => {
   try {
     const { email } = req.body;
-    
+
     if (!email) {
       return res.status(400).json({ message: 'Email is required' });
     }
-    
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found with this email' });
     }
-    
+
     // Reset user progress
     user.gameProgress = {
       currentClue: 1,
@@ -509,13 +542,13 @@ router.post('/admin/reset-progress', async (req, res) => {
       currentGameIndex: 0,
       lastUpdated: new Date()
     };
-    
+
     user.totalScore = 0;
     user.availablePoints = 0;
-    
+
     await user.save();
-    
-    res.json({ 
+
+    res.json({
       message: 'User progress reset successfully',
       user: {
         _id: user._id,

@@ -16,6 +16,7 @@ import Connections from './Game/Connections';
 import Placeholder from './Game/Placeholder';
 import MultipleChoice from './Game/MultipleChoice';
 import AudioGuess from './Game/AudioGuess';
+import Slideshow from './Game/Slideshow';
 
 const NewGameBoard = () => {
   const { user, updateUser } = useAuth();
@@ -177,9 +178,9 @@ const NewGameBoard = () => {
       case 'TextInput':
         return <TextInput question={game.question} options={game.options} correctAnswer={game.answer} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'ImageGuess':
-        return <ImageGuess imageUrl={game.imageUrl} question={game.question} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+        return <ImageGuess imageUrl={game.imageUrl} question={game.question} answers={game.answers} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'VideoGuess':
-        return <VideoGuess videoUrl={game.videoUrl} question={game.question} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+        return <VideoGuess videoUrl={game.videoUrl} question={game.question} answers={game.answers} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'Wordle':
         return <Wordle answer={game.answer} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'Connections':
@@ -190,6 +191,8 @@ const NewGameBoard = () => {
         return <MultipleChoice question={game.question} options={game.options} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'AudioGuess':
         return <AudioGuess audioUrl={game.audioUrl} question={game.question} answers={game.answers} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+      case 'Slideshow':
+        return <Slideshow images={game.images} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       default:
         return <div className="text-center text-gray-500">Unknown game component: {game.component}</div>;
     }
@@ -228,7 +231,7 @@ const NewGameBoard = () => {
         <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6">
           {/* F1 Theme Header */}
           <div className="text-center mb-4 sm:mb-6">
-            <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-2">F1 Birthday Hunt</h1>
+            <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-2">Birthday Treasure Hunt</h1>
             <p className="text-sm sm:text-lg italic text-gray-600 mb-4">
               "Smooth operator... smooth operation" - Carlos Sainz
             </p>

@@ -1,24 +1,56 @@
 import React, { useState } from 'react';
-import { Send, CheckCircle, Image as ImageIcon } from 'lucide-react';
+import { Send, CheckCircle, Image as ImageIcon, XCircle, RotateCcw } from 'lucide-react';
 
-const ImageGuess = ({ imageUrl, question, onComplete, isCompleted = false }) => {
+const ImageGuess = ({ imageUrl, question, correctAnswer, onComplete, isCompleted = false }) => {
   const [answer, setAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
   const [showSkipModal, setShowSkipModal] = useState(false);
   const [skipPassword, setSkipPassword] = useState('');
+  const [isCorrect, setIsCorrect] = useState(null);
+  const [showResult, setShowResult] = useState(false);
 
   const handleSubmit = () => {
     if (!answer.trim() || submitted || isCompleted) return;
     
     setSubmitted(true);
+    setShowResult(true);
     
-    if (!hasCalledCompletion && !isCompleted) {
-      setHasCalledCompletion(true);
-      setTimeout(() => {
-        onComplete && onComplete();
-      }, 1000);
+    // Check if answer is correct
+    const userAnswer = answer.toLowerCase().trim();
+    const correct = correctAnswer ? correctAnswer.toLowerCase().trim() : '';
+    
+    let answerIsCorrect = false;
+    if (correct) {
+      // Handle multiple correct answers (array)
+      if (Array.isArray(correct)) {
+        answerIsCorrect = correct.some(correctAns => 
+          userAnswer.includes(correctAns.toLowerCase().trim())
+        );
+      } else {
+        answerIsCorrect = userAnswer.includes(correct);
+      }
     }
+    
+    setIsCorrect(answerIsCorrect);
+    
+    if (answerIsCorrect) {
+      // Correct answer - proceed after delay
+      if (!hasCalledCompletion && !isCompleted) {
+        setHasCalledCompletion(true);
+        setTimeout(() => {
+          onComplete && onComplete();
+        }, 1500);
+      }
+    }
+  };
+
+  const handleRetry = () => {
+    setAnswer('');
+    setSubmitted(false);
+    setShowResult(false);
+    setIsCorrect(null);
+    setHasCalledCompletion(false);
   };
 
   const handleKeyPress = (e) => {
@@ -47,16 +79,16 @@ const ImageGuess = ({ imageUrl, question, onComplete, isCompleted = false }) => 
     }
   };
 
-  if (isCompleted || submitted) {
+  if (isCompleted || (submitted && isCorrect)) {
     return (
       <div className="bg-white border-2 border-red-600 rounded-lg p-6 text-center">
         <div className="mb-4">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h3 className="text-xl font-bold text-gray-800 mb-2">
-            {isCompleted ? 'Challenge Completed!' : 'Answer Submitted!'}
+            {isCompleted ? 'Challenge Completed!' : 'Correct Answer!'}
           </h3>
           <p className="text-gray-600">
-            {isCompleted ? 'Great observation!' : 'Your answer has been recorded!'}
+            {isCompleted ? 'Great observation!' : 'Moving to next step...'}
           </p>
         </div>
       </div>
@@ -115,14 +147,44 @@ const ImageGuess = ({ imageUrl, question, onComplete, isCompleted = false }) => 
           />
         </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={!answer.trim() || submitted}
-          className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Send className="w-5 h-5" />
-          <span>Submit Answer</span>
-        </button>
+        {!showResult ? (
+          <button
+            onClick={handleSubmit}
+            disabled={!answer.trim() || submitted}
+            className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <Send className="w-5 h-5" />
+            <span>Submit Answer</span>
+          </button>
+        ) : (
+          <div className="space-y-4">
+            {/* Result Display */}
+            <div className="text-center">
+              {isCorrect ? (
+                <div className="flex items-center justify-center space-x-2 text-green-600 mb-4">
+                  <CheckCircle className="w-6 h-6" />
+                  <span className="text-lg font-semibold">Correct! Moving to next step...</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center space-x-2 text-red-600 mb-4">
+                  <XCircle className="w-6 h-6" />
+                  <span className="text-lg font-semibold">Incorrect answer. Try again!</span>
+                </div>
+              )}
+            </div>
+
+            {/* Retry Button for incorrect answers */}
+            {!isCorrect && (
+              <button
+                onClick={handleRetry}
+                className="w-full bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition-colors font-semibold flex items-center justify-center space-x-2"
+              >
+                <RotateCcw className="w-5 h-5" />
+                <span>Try Again</span>
+              </button>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="mt-4 text-sm text-gray-500 text-center">

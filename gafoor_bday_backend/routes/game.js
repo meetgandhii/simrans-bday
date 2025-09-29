@@ -96,6 +96,7 @@ const CLUES = [
         component: "ImageGuess",
         imageUrl: "/images/nike.png",
         question: "Guess the product from this image",
+        answer: "nike",
         points: 100
       },
       // {
@@ -122,6 +123,7 @@ const CLUES = [
         component: "VideoGuess",
         videoUrl: "/images/reel.mp4",
         question: "Guess the animal from this reel",
+        answer: "cow",
         points: 100
       },
       {
@@ -129,6 +131,7 @@ const CLUES = [
         title: "Shayari Challenge",
         component: "TextInput",
         question: "mai hu veeru tu hai JAI\nmai chahu aditi tujhe mil jaye apna JAI \nye surya ke KIRAN mai phigal jaye ice bhi \nmai chahu tu kashmir jaa kar khayie ye bhi \nye next location mai enter karne se pehle chillana AMBE MAATE KI …..",
+        answer: "jai prakash",
         points: 100
       }
     ],
@@ -204,6 +207,7 @@ const CLUES = [
         title: "Shayari Challenge",
         component: "TextInput",
         question: "jungle jungle pata chala hai, raste pe chaddi fata pada hai, hiran sallu bhai se bhaga hai, bhaagke dakshin raaste me gaya hai.",
+        answer: "arnold arboretum",
         points: 100
       }
     ],

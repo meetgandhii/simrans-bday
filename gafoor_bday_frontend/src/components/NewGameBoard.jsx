@@ -208,9 +208,9 @@ const NewGameBoard = () => {
       case 'MultiStepTextInput':
         return <MultiStepTextInput stepId={step.id} gameId={game.id} steps={game.steps} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'ImageGuess':
-        return <ImageGuess imageUrl={game.imageUrl} question={game.question} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+        return <ImageGuess imageUrl={game.imageUrl} question={game.question} correctAnswer={game.answer} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'VideoGuess':
-        return <VideoGuess videoUrl={game.videoUrl} question={game.question} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+        return <VideoGuess videoUrl={game.videoUrl} question={game.question} correctAnswer={game.answer} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'Wordle':
         return <Wordle answer={game.answer} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'Connections':

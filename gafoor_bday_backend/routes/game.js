@@ -66,7 +66,7 @@ const CLUES = [
         component: "QuickQuiz",
         questions: [
           { question: "What is Carlos Sainz's number?", options: ["55", "16", "3", "77"], correct: 0 },
-          { question: "Which team does Carlos drive for?", options: ["Ferrari", "Red Bull", "Mercedes", "McLaren"], correct: 0 },
+          { question: "Which team does Carlos drive for in 2024?", options: ["Ferrari", "Red Bull", "Mercedes", "McLaren"], correct: 0 },
           { question: "What is the maximum speed in F1?", options: ["200 mph", "220 mph", "240 mph", "260 mph"], correct: 2 },
           { question: "How many races in a F1 season?", options: ["20", "22", "24", "26"], correct: 2 },
           { question: "What does DRS stand for?", options: ["Drag Reduction System", "Downforce Reduction System", "Drive Reduction System", "Draft Reduction System"], correct: 0 }
@@ -99,7 +99,7 @@ const CLUES = [
         component: "ImageGuess",
         imageUrl: "/images/nike.png",
         question: "Guess the product from this image",
-        answers: ["nike", "shoes", "nike shoes", "sneakers"],
+        answers: ["nike shoes"],
         points: 100
       },
     ],
@@ -200,8 +200,8 @@ const CLUES = [
         id: 1,
         title: "Shayari Challenge",
         component: "TextInput",
-        question: "jungle jungle pata chala hai, raste pe chaddi fata pada hai, hiran sallu bhai se bhaga hai, bhaagke dakshin raaste me gaya hai.",
-        answer: "arnold arboretum",
+        question: "jungle jungle pata chala hai, \nrase pe chaddi fata pada hai, \nhiran sallu bhai se bhaga hai, \nbhaagke dakshin raaste me gaya hai.",
+        answer: "arboretum",
         points: 100
       },
     ],
@@ -222,33 +222,33 @@ const CLUES = [
         answer: "bhaang bhosda",
         points: 100
       },
+      // {
+      //   id: 2,
+      //   title: "Common Thing Identification",
+      //   component: "TextInput",
+      //   question: "Look at these items and identify what they have in common:",
+      //   options: ["Monaco", "Red", "Leo", "16"],
+      //   answer: "charles",
+      //   points: 100
+      // },
+      // {
+      //   id: 3,
+      //   title: "Song Theme Guessing",
+      //   component: "AudioGuess",
+      //   audioUrl: "/images/song.mp3",
+      //   question: "Identify the theme from this song",
+      //   answers: ["charles", "water", "paani", "river", "charles river"],
+      //   points: 100
+      // },
       {
         id: 2,
-        title: "Common Thing Identification",
-        component: "TextInput",
-        question: "Look at these items and identify what they have in common:",
-        options: ["Monaco", "Red", "Leo", "16"],
-        answer: "charles",
-        points: 100
-      },
-      {
-        id: 3,
-        title: "Song Theme Guessing",
-        component: "AudioGuess",
-        audioUrl: "/images/song.mp3",
-        question: "Identify the theme from this song",
-        answers: ["charles", "water", "paani", "river", "charles river"],
-        points: 100
-      },
-      {
-        id: 4,
         title: "Wordle Challenge",
         component: "Wordle",
         answer: "RIVER",
         points: 100
       }
     ],
-    finalAnswer: "charles",
+    finalAnswer: "charles river",
     location: { lat: 42.3601, lng: -71.0589, name: "Charles River" },
     points: { bonus: 50 }
   },

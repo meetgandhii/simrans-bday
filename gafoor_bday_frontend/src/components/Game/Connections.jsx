@@ -131,7 +131,7 @@ const Connections = ({ categories, items: allItems, onComplete, isCompleted = fa
       )}
 
       {/* Items Grid */}
-      <div className="grid grid-cols-2 gap-2 mb-4">
+      <div className="grid grid-cols-4 gap-2 mb-4">
         {items.map((item, index) => {
           const isCompleted = completedCategories.includes(item.category);
           const isSelected = selectedItems.includes(item.text);

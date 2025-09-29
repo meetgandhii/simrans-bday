@@ -106,7 +106,7 @@ const TextInput = ({ question, options, correctAnswer, onComplete, isCompleted =
             Skip Game
           </button>
         </div>
-        <p className="text-gray-600 mb-4">{question}</p>
+        <div className="text-gray-600 mb-4 whitespace-pre-line">{question}</div>
       </div>
 
       {/* Display options if provided */}

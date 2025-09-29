@@ -389,9 +389,10 @@ const NewGameBoard = () => {
               <h2 className="text-4xl font-bold text-green-600 mb-6">
                 🎉 CONGRATULATIONS! 🎉
               </h2>
-              <h3 className="text-3xl font-bold text-red-600 mb-6">
-                🎂 HAPPY BIRTHDAY SIMRAN! 🎂
-              </h3>
+              <h5 className="text-xl font-bold text-red-600 mb-6 whitespace-pre-line text-left">
+                Last task for you is to do everything in order to each individual:
+{'\n\n'}1. Shake hands{'\n'}2. Give a tight huggie{'\n'}3. And say these words "Thank you so much for Today I am very grateful to have you guys in my life."
+              </h5>
               
               {/* Birthday GIF */}
               <div className="mb-6">

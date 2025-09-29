@@ -168,7 +168,7 @@ const GameBoard = () => {
           {completedClues.length >= 8 && (
             <div className="text-center p-8 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg border-2 border-green-500">
               <h2 className="text-4xl font-bold text-green-600 mb-4">
-                🎉 HAPPY BIRTHDAY SIMRAN! 🎉
+                🎉 Last task for you is to do everything in order to each individual - 1. Shake hands, 2. Give a tight huggie, 3. And say these words “Thank you so much for Today I am very grateful to have you guys in my life.
               </h2>
               <div className="space-y-2 text-lg">
                 <p>Final Score: <span className="font-bold text-2xl text-red-600">{user.totalScore}</span> points</p>

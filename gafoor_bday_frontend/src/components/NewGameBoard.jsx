@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { gameAPI } from '../services/api';
 import { LOCATION_ARRAY } from '../utils/constants';
@@ -31,6 +31,7 @@ const NewGameBoard = () => {
   const [showNextStep, setShowNextStep] = useState(false);
   const [clues, setClues] = useState([]);
   const [showOutro, setShowOutro] = useState(false);
+  const videoRef = useRef(null);
 
   const loadGameProgress = async () => {
     try {
@@ -92,6 +93,23 @@ const NewGameBoard = () => {
       }
     }
   }, [currentStep, completedGames]);
+
+  // Handle video autoplay when celebration screen is shown
+  useEffect(() => {
+    if (stepCompleted[8] && !showOutro && videoRef.current) {
+      const video = videoRef.current;
+      const attemptPlay = async () => {
+        try {
+          video.muted = false;
+          video.volume = 1.0;
+          await video.play();
+        } catch (error) {
+          console.log('Autoplay prevented, will require user interaction');
+        }
+      };
+      attemptPlay();
+    }
+  }, [stepCompleted, showOutro]);
 
   const handleGameComplete = async (stepId, gameId) => {
     try {
@@ -396,7 +414,7 @@ const NewGameBoard = () => {
               
               {/* Birthday GIF */}
               <div className="mb-6">
-                <img 
+                {/* <img 
                   src="/images/saat-crore.gif" 
                   alt="Birthday Celebration" 
                   className="mx-auto max-w-full h-auto max-h-96 sm:max-h-[500px] rounded-lg shadow-lg"
@@ -404,7 +422,49 @@ const NewGameBoard = () => {
                     console.error('GIF failed to load:', '/images/saat-crore.gif');
                     e.target.style.display = 'none';
                   }}
-                />
+                /> */}
+                <video 
+                  ref={videoRef}
+                  src="/images/saat-crore.mp4" 
+                  autoPlay
+                  loop
+                  playsInline
+                  className="mx-auto max-w-full h-auto max-h-96 sm:max-h-[500px] rounded-lg shadow-lg cursor-pointer"
+                  onError={(e) => {
+                    console.error('Video failed to load:', '/images/saat-crore.mp4');
+                    e.target.style.display = 'none';
+                  }}
+                  onLoadedData={(e) => {
+                    // Force unmute and play when video loads
+                    e.target.muted = false;
+                    e.target.volume = 1.0;
+                    e.target.play().catch(err => {
+                      console.log('Autoplay prevented, user interaction required');
+                    });
+                  }}
+                  onClick={async (e) => {
+                    // Ensure video plays when clicked
+                    try {
+                      e.target.muted = false;
+                      e.target.volume = 1.0;
+                      await e.target.play();
+                    } catch (error) {
+                      console.log('Play failed:', error);
+                    }
+                  }}
+                  onMouseEnter={async (e) => {
+                    // Ensure video plays when hovered
+                    try {
+                      e.target.muted = false;
+                      e.target.volume = 1.0;
+                      await e.target.play();
+                    } catch (error) {
+                      console.log('Hover play failed:', error);
+                    }
+                  }}
+                >
+                  Your browser does not support the video tag.
+                </video>
               </div>
 
               <div className="space-y-2 text-lg">
@@ -424,19 +484,13 @@ const NewGameBoard = () => {
                 </div>
               </div>
 
-              {/* Action buttons */}
-              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+              {/* Action button */}
+              <div className="mt-8 flex justify-center">
                 <button
                   onClick={() => setShowOutro(true)}
                   className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg"
                 >
                   Next
-                </button>
-                <button
-                  onClick={resetUserProgress}
-                  className="bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-700 transition-colors font-semibold text-lg shadow-lg"
-                >
-                  Reset Progress
                 </button>
               </div>
             </div>

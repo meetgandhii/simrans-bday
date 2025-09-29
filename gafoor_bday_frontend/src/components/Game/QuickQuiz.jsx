@@ -273,7 +273,7 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
               value={skipPassword}
               onChange={(e) => setSkipPassword(e.target.value)}
               onKeyPress={handleSkipKeyPress}
-              placeholder="Password: jainish"
+              placeholder="Password: 5555"
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 mb-4"
               autoFocus
             />

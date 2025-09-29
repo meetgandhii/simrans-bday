@@ -195,7 +195,7 @@ const Slideshow = ({ images, onComplete, isCompleted = false }) => {
               value={skipPassword}
               onChange={(e) => setSkipPassword(e.target.value)}
               onKeyPress={handleSkipKeyPress}
-              placeholder="Password: jainish"
+              placeholder="Password: 5555"
               className="w-full p-2 border border-gray-300 rounded mb-4"
             />
             <div className="flex gap-2">

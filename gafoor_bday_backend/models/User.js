@@ -40,7 +40,7 @@ const userSchema = new mongoose.Schema({
     gameProgress: {
         currentClue: {
             type: Number,
-            default: 1
+            default: 0
         },
         completedClues: [{
             type: Number

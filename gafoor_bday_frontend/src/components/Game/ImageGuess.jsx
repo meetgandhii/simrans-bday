@@ -69,13 +69,27 @@ const ImageGuess = ({ imageUrl, question, answers, onComplete, isCompleted = fal
     return (
       <div className="bg-white border-2 border-red-600 rounded-lg p-6 text-center">
         <div className="mb-4">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <CheckCircle className={`w-16 h-16 mx-auto mb-4 ${isCompleted ? 'text-green-500' : (isCorrect === true ? 'text-green-500' : (isCorrect === false ? 'text-red-500' : 'text-gray-400'))}`} />
           <h3 className="text-xl font-bold text-gray-800 mb-2">
-            {isCompleted ? 'Challenge Completed!' : 'Answer Submitted!'}
+            {isCompleted ? 'Challenge Completed!' : (isCorrect === true ? 'Correct Answer!' : (isCorrect === false ? 'Incorrect Answer' : 'Answer Submitted!'))}
           </h3>
           <p className="text-gray-600">
-            {isCompleted ? 'Great observation!' : 'Your answer has been recorded!'}
+            {isCompleted ? 'Great observation!' : (isCorrect === true ? 'You got it right! Well done!' : (isCorrect === false ? 'Try again with a different answer.' : 'Your answer has been recorded!'))}
           </p>
+          {isCorrect === false && (
+            <div className="mt-4">
+              <button
+                onClick={() => {
+                  setSubmitted(false);
+                  setIsCorrect(null);
+                  setAnswer('');
+                }}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

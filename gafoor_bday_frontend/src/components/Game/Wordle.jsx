@@ -77,7 +77,7 @@ const Wordle = ({ answer, onComplete, isCompleted = false }) => {
             {isCompleted ? 'Wordle Completed!' : (won ? 'Congratulations!' : 'Game Over!')}
           </h3>
           <p className="text-gray-600 mb-4">
-            {isCompleted ? `The word was: ${answer}` : (won ? `You guessed it in ${guesses.length} tries!` : `The word was: ${answer}`)}
+            {isCompleted ? `` : (won ? `You guessed it in ${guesses.length} tries!` : ``)}
           </p>
           {!isCompleted && !won && (
             <button

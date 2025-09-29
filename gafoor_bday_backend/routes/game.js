@@ -22,14 +22,12 @@ const CLUES = [
           "/images/slideshow/intro-3.jpg",
           "/images/slideshow/intro-4.jpg",
           "/images/slideshow/intro-5.jpg",
-          "/images/slideshow/intro-6.jpg"
         ],
         points: 0
       }
     ],
-    finalAnswer: "start",
+    finalAnswer: null,
     location: { lat: 0, lng: 0, name: "Starting Point" },
-    bonusTask: "Get ready for the adventure!",
     points: { bonus: 0 }
   },
   {
@@ -48,7 +46,6 @@ const CLUES = [
     ],
     finalAnswer: "dunkin",
     location: { lat: 42.3515, lng: -71.0795, name: "Dunkin'" },
-    bonusTask: "Take a selfie with the store sign",
     points: { bonus: 50 }
   },
   {
@@ -89,7 +86,6 @@ const CLUES = [
     ],
     finalAnswer: "trader joes",
     location: { lat: 42.3515, lng: -71.0795, name: "Trader Joe's Boylston" },
-    bonusTask: "Do 55 jumping jacks (Carlos's number)",
     points: { bonus: 50 }
   },
   {
@@ -109,7 +105,6 @@ const CLUES = [
     ],
     finalAnswer: "nike",
     location: { lat: 42.3502, lng: -71.0759, name: "Nike Store" },
-    bonusTask: "Take a victory lap around the store",
     points: { bonus: 50 }
   },
   {
@@ -137,7 +132,6 @@ const CLUES = [
     ],
     finalAnswer: "jp licks",
     location: { lat: 42.3467, lng: -71.0707, name: "JP Licks" },
-    bonusTask: "Order a birthday flavor",
     points: { bonus: 50 }
   },
   {
@@ -195,7 +189,6 @@ const CLUES = [
     ],
     finalAnswer: "tj maxx",
     location: { lat: 42.3501, lng: -71.0764, name: "TJ Maxx" },
-    bonusTask: "Find a hidden treasure",
     points: { bonus: 50 }
   },
   {
@@ -214,7 +207,6 @@ const CLUES = [
     ],
     finalAnswer: "arnold arboretum",
     location: { lat: 42.3014, lng: -71.1249, name: "Arnold Arboretum" },
-    bonusTask: "Make a birthday wish",
     points: { bonus: 50 }
   },
   {
@@ -258,7 +250,6 @@ const CLUES = [
     ],
     finalAnswer: "charles",
     location: { lat: 42.3601, lng: -71.0589, name: "Charles River" },
-    bonusTask: "Watch the sunset and celebrate!",
     points: { bonus: 50 }
   },
   {
@@ -268,7 +259,6 @@ const CLUES = [
     games: [],
     finalAnswer: "celebration",
     location: { lat: 42.3601, lng: -71.0589, name: "Charles River Esplanade" },
-    bonusTask: "Take a group photo!",
     points: { bonus: 100 }
   }
 ];
@@ -364,7 +354,11 @@ router.post('/complete-clue', auth, async (req, res) => {
 
     // Validate answer
     let isCorrect = false;
-    if (clue.finalAnswer) {
+    
+    // Special case for Step 0 (slideshow) - no validation needed
+    if (clueId === 0) {
+      isCorrect = true;
+    } else if (clue.finalAnswer) {
       const answerLower = answer.toLowerCase();
       const finalAnswerLower = clue.finalAnswer.toLowerCase();
 
@@ -535,7 +529,7 @@ router.post('/admin/reset-progress', async (req, res) => {
 
     // Reset user progress
     user.gameProgress = {
-      currentClue: 1,
+      currentClue: 0,
       completedClues: [],
       completedTasks: [],
       completedGames: new Map(),
@@ -550,6 +544,46 @@ router.post('/admin/reset-progress', async (req, res) => {
 
     res.json({
       message: 'User progress reset successfully',
+      user: {
+        _id: user._id,
+        username: user.username,
+        email: user.email,
+        currentClue: user.gameProgress.currentClue,
+        completedClues: user.gameProgress.completedClues,
+        totalScore: user.totalScore
+      }
+    });
+  } catch (error) {
+    console.error('Reset progress error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// User endpoint to reset their own progress
+router.post('/reset-progress', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Reset user progress
+    user.gameProgress = {
+      currentClue: 0,
+      completedClues: [],
+      completedTasks: [],
+      completedGames: new Map(),
+      currentGameIndex: 0,
+      lastUpdated: new Date()
+    };
+
+    user.totalScore = 0;
+    user.availablePoints = 0;
+
+    await user.save();
+
+    res.json({
+      message: 'Your progress has been reset successfully',
       user: {
         _id: user._id,
         username: user.username,

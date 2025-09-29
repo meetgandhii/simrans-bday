@@ -30,13 +30,14 @@ const NewGameBoard = () => {
   const [currentGameIndex, setCurrentGameIndex] = useState(0);
   const [showNextStep, setShowNextStep] = useState(false);
   const [clues, setClues] = useState([]);
+  const [showOutro, setShowOutro] = useState(false);
 
   const loadGameProgress = async () => {
     try {
       const response = await gameAPI.getProgress();
       if (response.data) {
         const progress = response.data;
-        setCurrentStep(progress.currentClue || 1);
+        setCurrentStep(progress.currentClue !== undefined ? progress.currentClue : 0);
         setCompletedGames(progress.completedGames || {});
         setStepCompleted(progress.completedTasks || []);
         setCurrentGameIndex(progress.currentGameIndex || 0);
@@ -127,17 +128,52 @@ const NewGameBoard = () => {
         }
       }
       
-      // Refresh progress to get updated scores
-      loadGameProgress();
+      // Note: Local state is updated above, no need to reload progress
     } catch (error) {
       console.error('Error completing game:', error);
+    }
+  };
+
+  const resetUserProgress = async () => {
+    try {
+      await gameAPI.resetProgress();
+      // Reset all local state
+      setCurrentStep(0);
+      setCompletedGames({});
+      setStepCompleted({});
+      setShowFinalAnswer(false);
+      setFinalAnswer('');
+      setCurrentGameIndex(0);
+      setShowNextStep(false);
+      setShowOutro(false);
+      // Reload user data
+      loadGameProgress();
+    } catch (error) {
+      console.error('Error resetting progress:', error);
     }
   };
 
   const handleFinalAnswerSubmit = async (stepId, answer) => {
     try {
       const step = clues.find(c => c.id === stepId);
-      if (step && answer.toLowerCase().includes(step.finalAnswer.toLowerCase())) {
+      // Special case for Step 0 (slideshow) - no final answer validation needed
+      if (stepId === 0) {
+        // Complete the step without answer validation
+        await gameAPI.completeClue(stepId, answer);
+        setStepCompleted(prev => ({ ...prev, [stepId]: true }));
+        setShowFinalAnswer(false);
+        setFinalAnswer('');
+        setShowNextStep(true);
+        
+        // Show success message and move to next step after delay
+        setTimeout(() => {
+          setShowNextStep(false);
+          loadGameProgress(); // This will advance to the next step
+        }, 2000);
+        return;
+      }
+      
+      if (step && step.finalAnswer && answer.toLowerCase().includes(step.finalAnswer.toLowerCase())) {
         // Correct answer - complete the step
         await gameAPI.completeClue(stepId, answer);
         setStepCompleted(prev => ({ ...prev, [stepId]: true }));
@@ -283,7 +319,7 @@ const NewGameBoard = () => {
                 )}
 
                 {/* Final Answer Input */}
-                {isActive && showFinalAnswer && currentStep !== 8 && (
+                {isActive && showFinalAnswer && currentStep !== 8 && currentStep !== 0 && (
                   <div className="bg-yellow-50 border-2 border-yellow-400 rounded-lg p-4 mb-4">
                     <h3 className="text-lg font-bold text-yellow-800 mb-2">🎯 Final Challenge!</h3>
                     <p className="text-yellow-700 mb-3">
@@ -306,6 +342,22 @@ const NewGameBoard = () => {
                         Submit
                       </button>
                     </div>
+                  </div>
+                )}
+
+                {/* Begin Adventure Button for Step 0 */}
+                {isActive && showFinalAnswer && currentStep === 0 && (
+                  <div className="bg-green-50 border-2 border-green-400 rounded-lg p-6 mb-4 text-center">
+                    <h3 className="text-xl font-bold text-green-800 mb-3">🎉 Ready to Begin!</h3>
+                    <p className="text-green-700 mb-4">
+                      Welcome to your birthday treasure hunt adventure!
+                    </p>
+                    <button
+                      onClick={() => handleFinalAnswerSubmit(step.id, "start")}
+                      className="bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transition-colors font-semibold text-lg shadow-lg"
+                    >
+                      🚀 Click Here to Begin Your Adventure!
+                    </button>
                   </div>
                 )}
 
@@ -332,7 +384,7 @@ const NewGameBoard = () => {
           })}
 
           {/* Final completion screen */}
-          {stepCompleted[8] && (
+          {stepCompleted[8] && !showOutro && (
             <div className="text-center p-8 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg border-2 border-green-500">
               <h2 className="text-4xl font-bold text-green-600 mb-6">
                 🎉 CONGRATULATIONS! 🎉
@@ -369,6 +421,60 @@ const NewGameBoard = () => {
                   <span>🎂</span>
                   <span>🎊</span>
                 </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={() => setShowOutro(true)}
+                  className="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg shadow-lg"
+                >
+                  Next
+                </button>
+                <button
+                  onClick={resetUserProgress}
+                  className="bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-700 transition-colors font-semibold text-lg shadow-lg"
+                >
+                  Reset Progress
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Outro image screen */}
+          {stepCompleted[8] && showOutro && (
+            <div className="text-center p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-lg border-2 border-purple-500">
+              <h2 className="text-3xl font-bold text-purple-600 mb-6">
+                🎬 The End! 🎬
+              </h2>
+              
+              {/* Outro image - displayed as big as possible */}
+              <div className="mb-6">
+                <img 
+                  src="/images/outro-6.jpg" 
+                  alt="Outro Image" 
+                  className="mx-auto max-w-full h-auto max-h-[80vh] rounded-lg shadow-lg"
+                  onError={(e) => {
+                    console.error('Outro image failed to load:', '/images/outro-6.jpg');
+                    e.target.style.display = 'none';
+                  }}
+                />
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={() => setShowOutro(false)}
+                  className="bg-purple-600 text-white px-8 py-4 rounded-lg hover:bg-purple-700 transition-colors font-semibold text-lg shadow-lg"
+                >
+                  Back
+                </button>
+                <button
+                  onClick={resetUserProgress}
+                  className="bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-700 transition-colors font-semibold text-lg shadow-lg"
+                >
+                  Reset Progress
+                </button>
               </div>
             </div>
           )}

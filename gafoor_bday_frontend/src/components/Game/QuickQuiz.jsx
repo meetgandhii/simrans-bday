@@ -11,6 +11,8 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
   const [hasCalledCompletion, setHasCalledCompletion] = useState(false);
   const [showSkipModal, setShowSkipModal] = useState(false);
   const [skipPassword, setSkipPassword] = useState('');
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(null);
 
   useEffect(() => {
     if (isCompleted) {
@@ -19,10 +21,10 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
       return;
     }
 
-    if (timeLeft > 0 && !quizCompleted) {
+    if (quizStarted && timeLeft > 0 && !quizCompleted) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !quizCompleted) {
+    } else if (quizStarted && timeLeft === 0 && !quizCompleted) {
       setQuizCompleted(true);
       if (score >= requiredCorrect && !hasCalledCompletion) {
         setHasCalledCompletion(true);
@@ -31,17 +33,41 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
     }
   }, [timeLeft, quizCompleted, score, requiredCorrect, hasCalledCompletion, questions.length, isCompleted]);
 
+  const startQuiz = () => {
+    setQuizStarted(true);
+    setShowSkipModal(false); // Close any open skip modal
+    setSkipPassword(''); // Clear skip password
+    // Ensure timer starts immediately
+    setTimeLeft(timeLimit);
+  };
+
+  const resetQuiz = () => {
+    setCurrentQuestion(0);
+    setSelectedAnswer(null);
+    setShowResult(false);
+    setScore(0);
+    setTimeLeft(timeLimit);
+    setQuizCompleted(false);
+    setHasCalledCompletion(false);
+    setQuizStarted(false);
+    setIsCorrect(null);
+    setShowSkipModal(false); // Reset skip modal state
+    setSkipPassword(''); // Clear skip password
+  };
+
   const handleAnswerSelect = (answerIndex) => {
-    if (showResult || quizCompleted || isCompleted) return;
+    if (showResult || quizCompleted || isCompleted || !quizStarted) return;
     setSelectedAnswer(answerIndex);
   };
 
   const handleSubmit = () => {
-    if (selectedAnswer === null || quizCompleted || isCompleted) return;
+    if (selectedAnswer === null || quizCompleted || isCompleted || !quizStarted) return;
     
     setShowResult(true);
+    const isAnswerCorrect = selectedAnswer === questions[currentQuestion].correct;
+    setIsCorrect(isAnswerCorrect);
     
-    if (selectedAnswer === questions[currentQuestion].correct) {
+    if (isAnswerCorrect) {
       setScore(score + 1);
     }
     
@@ -50,9 +76,11 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
         setCurrentQuestion(currentQuestion + 1);
         setSelectedAnswer(null);
         setShowResult(false);
+        setIsCorrect(null);
       } else {
         setQuizCompleted(true);
-        if (score + (selectedAnswer === questions[currentQuestion].correct ? 1 : 0) >= requiredCorrect && !hasCalledCompletion) {
+        const finalScore = score + (isAnswerCorrect ? 1 : 0);
+        if (finalScore >= requiredCorrect && !hasCalledCompletion) {
           setHasCalledCompletion(true);
           setTimeout(() => onComplete && onComplete(), 1000);
         }
@@ -106,6 +134,42 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
           <p className={`text-lg font-medium ${passed ? 'text-green-600' : 'text-red-600'}`}>
             {passed ? `✅ You passed! (Need ${requiredCorrect}+ correct)` : `❌ You need ${requiredCorrect}+ correct to pass`}
           </p>
+          {!passed && !isCompleted && (
+            <div className="mt-6">
+              <button
+                onClick={resetQuiz}
+                className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold"
+              >
+                Try Again
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // Show start screen if quiz hasn't started
+  if (!quizStarted) {
+    return (
+      <div className="bg-white border-2 border-red-600 rounded-lg p-6 text-center">
+        <div className="mb-6">
+          <Clock className="w-16 h-16 text-red-600 mx-auto mb-4" />
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Quick Quiz Challenge</h3>
+          <p className="text-gray-600 mb-4">
+            Answer {questions.length} questions correctly in {formatTime(timeLimit)} to pass!
+          </p>
+          <p className="text-sm text-gray-500 mb-6">
+            You need to get {requiredCorrect}+ questions correct to complete this challenge.
+          </p>
+          <div className="flex justify-center">
+            <button
+              onClick={startQuiz}
+              className="bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold text-lg"
+            >
+              🚀 Start Quiz
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -209,7 +273,7 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
               value={skipPassword}
               onChange={(e) => setSkipPassword(e.target.value)}
               onKeyPress={handleSkipKeyPress}
-              placeholder="Password: 5555"
+              placeholder="Password: jainish"
               className="w-full p-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 mb-4"
               autoFocus
             />

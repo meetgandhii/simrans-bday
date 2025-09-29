@@ -11,7 +11,7 @@ const ScoreDisplay = ({ className = '' }) => {
   const progress = user.gameProgress;
   const completedClues = progress.completedClues.length;
   const completedTasks = progress.completedTasks.length;
-  const totalClues = 7; // Total number of clues in the game
+  const totalClues = 8; // Total number of clues in the game
 
   return (
     <div className={`bg-white rounded-lg shadow-lg p-4 ${className}`}>

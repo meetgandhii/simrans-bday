@@ -409,7 +409,7 @@ const NewGameBoard = () => {
 
               <div className="space-y-2 text-lg">
                 <p>Final Score: <span className="font-bold text-2xl text-red-600">{user?.totalScore || 0}</span> points</p>
-                <p className="text-xl font-medium text-green-700">F1 Champion! 🏆</p>
+                <p className="text-xl font-medium text-green-700">🏆 Best Iron Player! 🏆</p>
                 <p className="text-gray-700 mt-4">Time for sunset at Charles River! 🌅</p>
               </div>
 

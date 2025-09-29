@@ -39,7 +39,7 @@ const CLUES = [
         id: 1,
         title: "Guess",
         component: "TextInput",
-        question: "Birthday girl, don't overthinkin', We're not off hiking or mountain sinkin'. Follow the clues, keep on winkin', It's where the mugs are warm and we're sippin'!",
+        question: "Birthday girl, don't overthinkin', \nWe're not off hiking or mountain sinkin'. \nFollow the clues, keep on winkin', \nIt's where the mugs are warm and we're sippin'!",
         answer: "dunkin",
         points: 100
       }

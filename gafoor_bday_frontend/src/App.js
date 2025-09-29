@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Login from './components/Auth/Login';
 import Register from './components/Auth/Register';
@@ -9,6 +9,8 @@ import Header from './components/Layout/Header';
 import FloatingButtons from './components/Layout/FloatingButtons';
 import CameraInterface from './components/Camera/CameraInterface';
 import MapInterface from './components/Maps/MapInterface';
+import GameIntro from './components/GameIntro';
+import GameOutro from './components/GameOutro';
 // CLUES are now fetched from backend API
 import './index.css';
 
@@ -18,14 +20,31 @@ const AppContent = () => {
   const [showCamera, setShowCamera] = useState(false);
   const [showMap, setShowMap] = useState(false);
   const [currentClue, setCurrentClue] = useState(null);
+  const [showIntro, setShowIntro] = useState(false);
+  const [showOutro, setShowOutro] = useState(false);
+  const [hasSeenIntro, setHasSeenIntro] = useState(false);
   const { user, loading } = useAuth();
+
+  // Show intro slideshow for new users or if they haven't seen it yet
+  useEffect(() => {
+    if (user && !hasSeenIntro) {
+      setShowIntro(true);
+    }
+  }, [user, hasSeenIntro]);
+
+  // Check if game is completed to show outro
+  useEffect(() => {
+    if (user && user.gameProgress?.completedClues?.includes(8)) {
+      setShowOutro(true);
+    }
+  }, [user]);
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-red-600 to-red-800 flex items-center justify-center">
         <div className="text-center text-white">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold mb-2">F1 Birthday Hunt</h2>
+          <h2 className="text-2xl font-bold mb-2">Birthday Treasure Hunt</h2>
           <p className="text-red-200">Loading...</p>
         </div>
       </div>
@@ -38,6 +57,29 @@ const AppContent = () => {
     ) : (
       <Login onSwitchToRegister={() => setShowRegister(true)} />
     );
+  }
+
+  // Handle intro completion
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+    setHasSeenIntro(true);
+  };
+
+  // Handle outro restart
+  const handleOutroRestart = () => {
+    setShowOutro(false);
+    setHasSeenIntro(false);
+    setShowIntro(true);
+  };
+
+  // Show intro slideshow
+  if (showIntro) {
+    return <GameIntro onStartGame={handleIntroComplete} />;
+  }
+
+  // Show outro if game is completed
+  if (showOutro) {
+    return <GameOutro user={user} onRestart={handleOutroRestart} />;
   }
 
   const handleNavigate = (page) => {

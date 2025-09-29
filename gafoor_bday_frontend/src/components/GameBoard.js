@@ -141,7 +141,7 @@ const GameBoard = () => {
         <div className="bg-white rounded-xl shadow-lg p-6">
           {/* F1 Theme Header */}
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">F1 Birthday Hunt</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Birthday Treasure Hunt</h1>
             <p className="text-lg italic text-gray-600 mb-4">
               "Smooth operator... smooth operation" - Carlos Sainz
             </p>

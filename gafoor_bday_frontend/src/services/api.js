@@ -53,6 +53,9 @@ export const gameAPI = {
   getLocations: () => api.get('/game/locations'),
   getClue: (clueId) => api.get(`/game/clue/${clueId}`),
   skipClue: (userId, clueId) => api.post('/game/admin/skip-clue', { userId, clueId }),
+  validateGameStep: (stepId, gameId, stepIndex, answer, correctAnswer) => 
+    api.post('/game/validate-game-step', { stepId, gameId, stepIndex, answer, correctAnswer }),
+  getGameStepProgress: (stepId, gameId) => api.get(`/game/game-step-progress/${stepId}/${gameId}`),
 };
 
 // Shop API

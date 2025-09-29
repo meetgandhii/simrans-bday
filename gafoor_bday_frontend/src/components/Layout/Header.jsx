@@ -28,7 +28,7 @@ const Header = ({ onNavigate }) => {
               <Car className="w-6 h-6 text-red-600" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">F1 Birthday Hunt</h1>
+              <h1 className="text-xl font-bold">Birthday Treasure Hunt</h1>
               <p className="text-xs text-red-200">Smooth Operator</p>
             </div>
           </div>

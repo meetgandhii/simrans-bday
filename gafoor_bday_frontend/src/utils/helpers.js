@@ -1,4 +1,4 @@
-// Utility functions for the F1 Birthday Hunt app
+// Utility functions for the Birthday Treasure Hunt app
 
 // Format points with commas
 export const formatPoints = (points) => {

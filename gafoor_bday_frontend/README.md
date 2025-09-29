@@ -1,4 +1,4 @@
-# 🏎️ F1 Birthday Hunt - React App
+# 🏎️ Birthday Treasure Hunt - React App
 
 A React-based scavenger hunt game themed around Formula 1 and Carlos Sainz, created for Simran's birthday celebration.
 

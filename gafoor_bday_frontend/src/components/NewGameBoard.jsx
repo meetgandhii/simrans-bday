@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { gameAPI } from '../services/api';
-import { LOCATION_ARRAY } from '../utils/constants';
 import ScoreDisplay from './Layout/ScoreDisplay';
 
 // Import all game components
@@ -9,6 +8,7 @@ import WordSearch from './WordSearch';
 import ShoppingList from './ShoppingList';
 import QuickQuiz from './Game/QuickQuiz';
 import TextInput from './Game/TextInput';
+import MultiStepTextInput from './Game/MultiStepTextInput';
 import ImageGuess from './Game/ImageGuess';
 import VideoGuess from './Game/VideoGuess';
 import Wordle from './Game/Wordle';
@@ -18,7 +18,7 @@ import MultipleChoice from './Game/MultipleChoice';
 import AudioGuess from './Game/AudioGuess';
 
 const NewGameBoard = () => {
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentStep, setCurrentStep] = useState(1);
@@ -29,6 +29,9 @@ const NewGameBoard = () => {
   const [currentGameIndex, setCurrentGameIndex] = useState(0);
   const [showNextStep, setShowNextStep] = useState(false);
   const [clues, setClues] = useState([]);
+  const [showGameTransition, setShowGameTransition] = useState(false);
+  const [nextGameTitle, setNextGameTitle] = useState('');
+  const [timerStarted, setTimerStarted] = useState(true);
 
   const loadGameProgress = async () => {
     try {
@@ -58,6 +61,7 @@ const NewGameBoard = () => {
     setShowFinalAnswer(false);
     setShowNextStep(false);
     setFinalAnswer('');
+    setTimerStarted(true); // Reset timer to start for new steps
   }, [currentStep]);
 
   // Find the next incomplete game when step or completed games change
@@ -89,7 +93,7 @@ const NewGameBoard = () => {
         setShowFinalAnswer(true);
       }
     }
-  }, [currentStep, completedGames]);
+  }, [currentStep, completedGames, clues]);
 
   const handleGameComplete = async (stepId, gameId) => {
     try {
@@ -111,8 +115,17 @@ const NewGameBoard = () => {
         
         // Check if there are more games in this step
         if (currentGameIndexInStep < step.games.length - 1) {
-          // Move to next game in the same step
-          setCurrentGameIndex(currentGameIndexInStep + 1);
+          // Special handling for step 2, game 1 -> game 2 transition
+          if (stepId === 2 && gameId === 1) {
+            const nextGame = step.games[currentGameIndexInStep + 1];
+            setNextGameTitle(nextGame.title);
+            setShowGameTransition(true);
+            setTimerStarted(false); // Stop timer until user accepts
+            // Don't auto-advance, wait for user to accept
+          } else {
+            // Move to next game in the same step
+            setCurrentGameIndex(currentGameIndexInStep + 1);
+          }
         } else {
           // All games completed in this step
           if (stepId === 8) {
@@ -160,6 +173,22 @@ const NewGameBoard = () => {
     }
   };
 
+  const handleAcceptNextGame = () => {
+    setShowGameTransition(false);
+    setTimerStarted(true); // Start the timer when user accepts
+    // Find the current step and move to the next game
+    const step = clues.find(c => c.id === currentStep);
+    if (step && step.games) {
+      const currentGameIndexInStep = step.games.findIndex(game => {
+        const gameKey = `${currentStep}-${game.id}`;
+        return !completedGames[gameKey];
+      });
+      if (currentGameIndexInStep !== -1) {
+        setCurrentGameIndex(currentGameIndexInStep);
+      }
+    }
+  };
+
   const renderGameComponent = (step, game) => {
     const isCompleted = completedGames[`${step.id}-${game.id}`];
     
@@ -173,9 +202,11 @@ const NewGameBoard = () => {
       case 'ShoppingList':
         return <ShoppingList items={game.items} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'QuickQuiz':
-        return <QuickQuiz questions={game.questions} timeLimit={game.timeLimit} requiredCorrect={game.requiredCorrect} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+        return <QuickQuiz questions={game.questions} timeLimit={game.timeLimit} requiredCorrect={game.requiredCorrect} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} timerStarted={timerStarted} />;
       case 'TextInput':
         return <TextInput question={game.question} options={game.options} correctAnswer={game.answer} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
+      case 'MultiStepTextInput':
+        return <MultiStepTextInput stepId={step.id} gameId={game.id} steps={game.steps} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'ImageGuess':
         return <ImageGuess imageUrl={game.imageUrl} question={game.question} onComplete={handleGameCompleteCallback} isCompleted={isCompleted} />;
       case 'VideoGuess':
@@ -228,7 +259,7 @@ const NewGameBoard = () => {
         <div className="bg-white rounded-xl shadow-lg p-3 sm:p-6">
           {/* F1 Theme Header */}
           <div className="text-center mb-4 sm:mb-6">
-            <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-2">F1 Birthday Hunt</h1>
+            <h1 className="text-xl sm:text-3xl font-bold text-gray-800 mb-2">Birthday Treasure Hunt</h1>
             <p className="text-sm sm:text-lg italic text-gray-600 mb-4">
               "Smooth operator... smooth operation" - Carlos Sainz
             </p>
@@ -328,49 +359,45 @@ const NewGameBoard = () => {
             );
           })}
 
-          {/* Final completion screen */}
-          {stepCompleted[8] && (
-            <div className="text-center p-8 bg-gradient-to-r from-green-100 to-blue-100 rounded-lg border-2 border-green-500">
-              <h2 className="text-4xl font-bold text-green-600 mb-6">
-                🎉 CONGRATULATIONS! 🎉
-              </h2>
-              <h3 className="text-3xl font-bold text-red-600 mb-6">
-                🎂 HAPPY BIRTHDAY SIMRAN! 🎂
-              </h3>
-              
-              {/* Birthday GIF */}
-              <div className="mb-6">
-                <img 
-                  src="/images/saat-crore.gif" 
-                  alt="Birthday Celebration" 
-                  className="mx-auto max-w-full h-auto max-h-96 sm:max-h-[500px] rounded-lg shadow-lg"
-                  onError={(e) => {
-                    console.error('GIF failed to load:', '/images/saat-crore.gif');
-                    e.target.style.display = 'none';
-                  }}
-                />
-              </div>
-
-              <div className="space-y-2 text-lg">
-                <p>Final Score: <span className="font-bold text-2xl text-red-600">{user?.totalScore || 0}</span> points</p>
-                <p className="text-xl font-medium text-green-700">F1 Champion! 🏆</p>
-                <p className="text-gray-700 mt-4">Time for sunset at Charles River! 🌅</p>
-              </div>
-
-              {/* Celebration confetti effect */}
-              <div className="mt-6">
-                <div className="inline-flex space-x-2 text-2xl animate-bounce">
-                  <span>🎊</span>
-                  <span>🏁</span>
-                  <span>🏆</span>
-                  <span>🎂</span>
-                  <span>🎊</span>
-                </div>
-              </div>
-            </div>
-          )}
+          {/* Game completion is now handled by GameOutro component */}
         </div>
       </div>
+
+      {/* Game Transition Dialog */}
+      {showGameTransition && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4 text-center">
+            <div className="mb-6">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🎮</span>
+              </div>
+              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                Next Game Ready!
+              </h3>
+              <p className="text-lg text-gray-600 mb-2">
+                Get ready for:
+              </p>
+              <p className="text-xl font-semibold text-red-600">
+                {nextGameTitle}
+              </p>
+            </div>
+            
+            <div className="flex gap-3 justify-center">
+              <button
+                onClick={handleAcceptNextGame}
+                className="bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition-colors font-semibold flex items-center space-x-2"
+              >
+                <span>🎯</span>
+                <span>Start Game</span>
+              </button>
+            </div>
+            
+            <p className="text-sm text-gray-500 mt-4">
+              Click to begin the next challenge!
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

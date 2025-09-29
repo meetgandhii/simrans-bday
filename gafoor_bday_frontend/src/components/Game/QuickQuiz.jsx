@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, CheckCircle, XCircle, Trophy } from 'lucide-react';
 
-const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isCompleted = false }) => {
+const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isCompleted = false, timerStarted = true }) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
@@ -19,17 +19,17 @@ const QuickQuiz = ({ questions, timeLimit, requiredCorrect, onComplete, isComple
       return;
     }
 
-    if (timeLeft > 0 && !quizCompleted) {
+    if (timerStarted && timeLeft > 0 && !quizCompleted) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !quizCompleted) {
+    } else if (timerStarted && timeLeft === 0 && !quizCompleted) {
       setQuizCompleted(true);
       if (score >= requiredCorrect && !hasCalledCompletion) {
         setHasCalledCompletion(true);
         setTimeout(() => onComplete && onComplete(), 1000);
       }
     }
-  }, [timeLeft, quizCompleted, score, requiredCorrect, hasCalledCompletion, questions.length, isCompleted]);
+  }, [timeLeft, quizCompleted, score, requiredCorrect, hasCalledCompletion, questions.length, isCompleted, timerStarted]);
 
   const handleAnswerSelect = (answerIndex) => {
     if (showResult || quizCompleted || isCompleted) return;

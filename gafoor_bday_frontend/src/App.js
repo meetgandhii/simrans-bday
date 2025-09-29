@@ -22,8 +22,10 @@ const AppContent = () => {
   const [currentClue, setCurrentClue] = useState(null);
   const [showIntro, setShowIntro] = useState(false);
   const [showOutro, setShowOutro] = useState(false);
-  const [hasSeenIntro, setHasSeenIntro] = useState(false);
   const { user, loading } = useAuth();
+
+  // Check if user has seen intro before
+  const hasSeenIntro = localStorage.getItem('hasSeenIntro') === 'true';
 
   // Show intro slideshow for new users or if they haven't seen it yet
   useEffect(() => {
@@ -62,13 +64,13 @@ const AppContent = () => {
   // Handle intro completion
   const handleIntroComplete = () => {
     setShowIntro(false);
-    setHasSeenIntro(true);
+    localStorage.setItem('hasSeenIntro', 'true');
   };
 
   // Handle outro restart
   const handleOutroRestart = () => {
     setShowOutro(false);
-    setHasSeenIntro(false);
+    localStorage.removeItem('hasSeenIntro');
     setShowIntro(true);
   };
 

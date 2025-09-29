@@ -57,6 +57,15 @@ const userSchema = new mongoose.Schema({
             type: Number,
             default: 0
         },
+        gameStepProgress: {
+            type: Map,
+            of: {
+                isCorrect: Boolean,
+                answer: String,
+                timestamp: Date
+            },
+            default: {}
+        },
         lastUpdated: {
             type: Date,
             default: Date.now

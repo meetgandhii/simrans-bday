@@ -1,4 +1,4 @@
-# F1 Birthday Hunt - Full-Stack Web Application
+# Birthday Treasure Hunt - Full-Stack Web Application
 
 A complete full-stack web application for an F1-themed birthday scavenger hunt in Boston with location-based challenges, camera functionality, maps integration, points system, and gift shop.
 

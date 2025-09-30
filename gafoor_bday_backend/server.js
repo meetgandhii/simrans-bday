@@ -14,6 +14,9 @@ const testCloudinaryRoutes = require('./routes/test-cloudinary');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy for Render deployment (required for rate limiting)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet());
 app.use(cors({
